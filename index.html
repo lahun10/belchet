@@ -672,12 +672,73 @@ document.addEventListener('change',e=>{
  if(t.dataset.f){const [id,m]=t.dataset.f.split('|');save(id,{fee:{...(P(id).fee||{}),[m]:Math.max(0,Number(t.value)||0)}})}
  else if(t.dataset.n)save(t.dataset.n,{name:t.value.trim()||P(t.dataset.n).name});else if(t.dataset.g)saveG(t.dataset.g,{name:t.value.trim()||J(t.dataset.g).name});else if(t.dataset.ds)saveG(t.dataset.ds,{desc:t.value});else if(t.dataset.ms)saveG(t.dataset.ms,{mat:t.value});else if(t.dataset.db){const [id,f]=t.dataset.db.split('|');save(id,{[f]:t.value.trim()})}else if(t.dataset.dm){const [id,f]=t.dataset.dm.split('|');save(id,{med:{...(P(id).med||{}),[f]:t.value}})}else if(t.dataset.dv){const [id,k]=t.dataset.dv.split('|'),m=P(id).med||{};save(id,{med:{...m,vac:{...(m.vac||{}),[k]:t.checked}}})}else if(t.dataset.ph&&t.files&&t.files[0]){const id=t.dataset.ph,fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),s=Math.min(1,200/Math.max(im.width,im.height));c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);save(id,{foto:c.toDataURL('image/jpeg',.7)})};im.src=fr.result};fr.readAsDataURL(t.files[0])}else if(t.dataset.fn){const [i,f]=t.dataset.fn.split('|'),it=(((fin.main||{}).items)||[]).map(x=>({...x}));if(it[+i]){it[+i][f]=f==='a'?(t.value===''?'':Number(t.value)||0):t.value;saveFin(it)}}else if(t.dataset.pr){const [d,f]=t.dataset.pr.split('|');if(f==='t')saveProgT(d,t.value);else saveProg(d,f,t.value)}else if(t.dataset.pt){const [k,d]=t.dataset.pt.split('|');savePt(k,d,t.value===''?'':Number(t.value)||0)}else if(t.dataset.mo){const [k,i,f]=t.dataset.mo.split('|'),it=(((mat[k]||{}).items)||[]).map(x=>({...x}));if(it[+i]){it[+i][f]=f==='c'?(t.value===''?'':Number(t.value)||0):t.value;saveMat(k,it)}}else if(t.dataset.mh||t.dataset.mm){const [d,i]=(t.dataset.mh||t.dataset.mm).split('|'),rows=rowsOf(d).map(r=>({...r}));rows[+i][t.dataset.mh?'h':'m']=t.value;dr[d]=rows;const sb=document.querySelector('[data-sv="'+d+'"]');if(sb)sb.textContent='Guardar junta (cambios sin guardar)'}
 });
+
 $('#f').addEventListener('submit',submit);
+
 (async()=>{
  initFirebase();
- if(!firebaseReady){$('#demoNote').textContent='No se pudo iniciar Firebase. Esta versión no usa almacenamiento local como sustituto de la autenticación.';} else {$('#demoNote').textContent='BELCHET está conectado a Firebase. No uses datos reales de menores hasta verificar las reglas y la separación de datos privados.';}
- show();
+
+ if(!firebaseReady){
+  $('#demoNote').textContent='No se pudo iniciar Firebase. Verifica tu conexión a internet.';
+  show();
+  return;
+ }
+
+ $('#demoNote').textContent='BELCHET está conectado a Firebase.';
+
+ try{
+  await window.fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+  window.fbAuth.onAuthStateChanged(async user=>{
+   if(!user){
+    if(!me)show();
+    return;
+   }
+
+   if(me)return;
+
+   try{
+    const snap=await window.fbStore
+     .collection('users')
+     .doc(user.uid).get();
+
+    if(!snap.exists){
+     await window.fbAuth.signOut();
+     me=null;
+     show();
+     return;
+    }
+
+    const profile=snap.data();
+
+    if(!['scout','scouter'].includes(profile.role)){
+     await window.fbAuth.signOut();
+     me=null;
+     show();
+     return;
+    }
+
+    me={
+     u:profile.username || user.email.split('@')[0],
+     role:profile.role,
+     uid:user.uid
+    };
+
+    await setup();
+    show();
+
+   }catch(e){
+    console.error('Error restaurando la sesión',e);
+    show();
+   }
+  });
+
+ }catch(e){
+  console.error('No se pudo configurar la persistencia',e);
+  show();
+ }
 })();
+
 </script>
 
 <script>
