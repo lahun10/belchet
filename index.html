@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>BELCHET</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#17365D">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="BELCHET">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+
 <!-- Firebase compat SDK: Authentication y Firestore -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
@@ -670,6 +678,14 @@ $('#f').addEventListener('submit',submit);
  if(!firebaseReady){$('#demoNote').textContent='No se pudo iniciar Firebase. Esta versión no usa almacenamiento local como sustituto de la autenticación.';} else {$('#demoNote').textContent='BELCHET está conectado a Firebase. No uses datos reales de menores hasta verificar las reglas y la separación de datos privados.';}
  show();
 })();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').catch(function (err) { console.warn('BELCHET: no se pudo registrar el service worker', err); });
+  });
+}
 </script>
 </body>
 </html>
