@@ -16,6 +16,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;800&display=swap" rel="stylesheet">
@@ -27,7 +28,12 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:inherit}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 "Bricolage Grotesque",system-ui,sans-serif}
 button,input{font:inherit;color:inherit}
-.hero{background:var(--hd);padding:30px 20px 18px}
+.hero{background:var(--hd);padding:30px 16px 18px;text-align:center}
+.cover-brand{display:flex;align-items:center;justify-content:center;gap:clamp(8px,3vw,24px);max-width:720px;margin:0 auto}
+.cover-brand h1{flex:0 1 auto;text-align:center}
+.cover-logos{display:flex;align-items:center;justify-content:center;gap:6px;flex:0 1 150px;min-width:0}
+.cover-logos img{width:clamp(34px,8vw,62px);height:clamp(34px,8vw,62px);object-fit:contain}
+@media(max-width:420px){.cover-brand{gap:5px}.cover-logos{gap:2px;flex-basis:82px}.cover-logos img{width:clamp(28px,8vw,36px);height:clamp(28px,8vw,36px)}.hero h1{font-size:clamp(36px,12vw,54px)}}
 .hero h1{margin:0;font-size:clamp(46px,15vw,76px);font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--acc)}
 .hero p{margin:6px 0 0;color:#b9c7bd}
 .bands{display:flex;height:10px}.bands i{flex:1}
@@ -65,7 +71,8 @@ th:first-child,td:first-child{position:sticky;left:0;background:var(--card);text
 .fee{width:66px;padding:7px 4px;text-align:center;border:1px solid var(--line);border-radius:8px;background:var(--cell)}
 .fee.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 20%,var(--card))}
 .fee.part{border-color:var(--acc)}
-.tot{font-weight:800}.debt{font-weight:800;color:var(--bad)}.debt.z{color:var(--ok)}.fc{display:flex;gap:4px;align-items:center;justify-content:center}.nb{width:26px;height:26px;padding:0;border:1px solid var(--line);border-radius:6px;background:none;color:var(--mut);font-size:12px;font-weight:800}.nb.on{background:var(--acc);border-color:var(--acc);color:#14241d}.pre{color:var(--mut)}.ib{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--cell);font:italic 700 17px Georgia,serif}.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;z-index:9}.dlg{background:var(--card);width:100%;max-width:520px;border-radius:16px 16px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));display:grid;gap:10px}.dlg h3{margin:0;font-size:20px}.dlg p{margin:0;white-space:pre-wrap}.dlg textarea{width:100%;min-height:130px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--cell);font:inherit;resize:vertical}select{padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);width:100%}.tm{width:104px}.act{width:100%;min-width:160px;text-align:left;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--cell)}.act:disabled{border-color:transparent;background:none}.mt{min-width:150px;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--cell)}.pl{display:grid;gap:6px;max-height:52vh;overflow:auto}.pl b{margin-top:6px}.pi{padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--cell);text-align:left}.sc+.go{margin-top:10px;width:100%}.sc~.pi{margin-top:8px;width:100%}.jb{display:grid;gap:8px}.jr{display:flex;gap:8px;align-items:stretch}.jt{flex:1;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;text-align:left;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}.jt span{color:var(--mut);font-size:13px}.jt b{flex:1;min-width:120px}.jt i{font-style:normal;color:var(--mut)}.pdfb{padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--cell);font-weight:700;font-size:13px}.seg{flex-wrap:wrap}.seg button{flex:1 1 30%}.dot{display:inline-block;width:24px;height:24px;border:0;border-radius:0;margin-right:6px;vertical-align:middle}.mtot{background:var(--cell)}.rl{display:block;color:var(--mut);font-size:11px;padding-left:8px}.gap{width:14px;min-width:14px;padding:0;background:var(--bg)}.ad th{white-space:normal;font-size:11px;min-width:54px}.ad th.gap{min-width:14px}.ad thead tr+tr th:first-child{position:static;min-width:54px;text-align:center;background:transparent}.c.W{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 60%,var(--card))}.c.G{border-color:#7bd39a;background:color-mix(in srgb,#9be7b3 60%,var(--card))}.pg th:first-child,.pg td:first-child{min-width:72px;font-weight:600}.pg .mt{min-width:170px}.app .seg{background:none;padding:0;gap:6px}.app .seg button{flex:0 0 auto;padding:8px 13px;font-size:14px;border:1px solid var(--line);background:var(--card);border-radius:20px}.app .seg button.on{background:var(--acc);border-color:var(--acc);color:#14241d}.fs{display:grid;gap:6px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--card)}.fs div{display:flex;justify-content:space-between;gap:10px}.fs .big{font-size:18px;font-weight:800}.neg{color:var(--bad)}.pos{color:var(--ok)}.ft{min-width:112px}.adadmin-toggle{width:100%;font-weight:800}.adadmin-panel{display:grid;gap:10px;margin-top:10px}.dc{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:12px;display:grid;gap:10px;margin-bottom:10px}.dh{display:grid;grid-template-columns:58px 1fr;gap:10px;align-items:center}.ph{width:58px;height:58px;border-radius:50%;background:var(--cell);border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;color:var(--mut);font-weight:800;font-size:20px;cursor:pointer}.ph img{width:100%;height:100%;object-fit:cover}.dn{display:grid;gap:6px}.d2{display:grid;grid-template-columns:1fr 1fr;gap:6px;align-items:center}.dg{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}.vg{display:grid;gap:6px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.vg label{display:flex;flex-direction:row;gap:8px;align-items:center;font-weight:400}.vg input{width:auto}.dc .mt{min-width:0;width:100%}.dc small.neg{font-weight:700}.app .seg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.app .seg button{padding:9px 4px;font-size:12.5px;line-height:1.15;min-height:44px;overflow-wrap:anywhere}
+.tot{font-weight:800}.debt{font-weight:800;color:var(--bad)}.debt.z{color:var(--ok)}.fc{display:flex;gap:4px;align-items:center;justify-content:center}.nb{width:26px;height:26px;padding:0;border:1px solid var(--line);border-radius:6px;background:none;color:var(--mut);font-size:12px;font-weight:800}.nb.on{background:var(--acc);border-color:var(--acc);color:#14241d}.pre{color:var(--mut)}.ib{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--cell);font:italic 700 17px Georgia,serif}.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;z-index:9}.dlg{background:var(--card);width:100%;max-width:520px;border-radius:16px 16px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));display:grid;gap:10px}.dlg h3{margin:0;font-size:20px}.dlg p{margin:0;white-space:pre-wrap}.dlg textarea{width:100%;min-height:130px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--cell);font:inherit;resize:vertical}select{padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);width:100%}.tm{width:104px}.act{width:100%;min-width:160px;text-align:left;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--cell)}.act:disabled{border-color:transparent;background:none}.mt{min-width:150px;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--cell)}.pl{display:grid;gap:6px;max-height:52vh;overflow:auto}.pl b{margin-top:6px}.pi{padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--cell);text-align:left}.sc+.go{margin-top:10px;width:100%}.sc~.pi{margin-top:8px;width:100%}.jb{display:grid;gap:8px}.jr{display:flex;gap:8px;align-items:stretch}.jt{flex:1;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;text-align:left;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}.jt span{color:var(--mut);font-size:13px}.jt b{flex:1;min-width:120px}.jt i{font-style:normal;color:var(--mut)}.pdfb{padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--cell);font-weight:700;font-size:13px}.seg{flex-wrap:wrap}.seg button{flex:1 1 30%}.dot{display:inline-block;width:24px;height:24px;border:0;border-radius:0;margin-right:6px;vertical-align:middle}.mtot{background:var(--cell)}.rl{display:block;color:var(--mut);font-size:11px;padding-left:8px}.gap{width:14px;min-width:14px;padding:0;background:var(--bg)}.ad th{white-space:normal;font-size:11px;min-width:54px}.ad th.gap{min-width:14px}.ad thead tr+tr th:first-child{position:static;min-width:54px;text-align:center;background:transparent}.c.W{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 60%,var(--card))}.c.G{border-color:#7bd39a;background:color-mix(in srgb,#9be7b3 60%,var(--card))}.pg th:first-child,.pg td:first-child{min-width:72px;font-weight:600}.pg .mt{min-width:170px}.app .seg{background:none;padding:0;gap:6px}.app .seg button{flex:0 0 auto;padding:8px 13px;font-size:14px;border:1px solid var(--line);background:var(--card);border-radius:20px}.app .seg button.on{background:var(--acc);border-color:var(--acc);color:#14241d}.fs{display:grid;gap:6px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--card)}.fs div{display:flex;justify-content:space-between;gap:10px}.fs .big{font-size:18px;font-weight:800}.neg{color:var(--bad)}.pos{color:var(--ok)}.ft{min-width:112px}.adadmin-toggle{width:100%;font-weight:800}.adadmin-panel{display:grid;gap:10px;margin-top:10px}.dc{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:12px;display:grid;gap:10px;margin-bottom:10px}.dh{display:grid;grid-template-columns:58px 1fr;gap:10px;align-items:center}.ph{width:58px;height:58px;border-radius:50%;background:var(--cell);border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;color:var(--mut);font-weight:800;font-size:20px;cursor:pointer}.ph img{width:100%;height:100%;object-fit:cover}.dn{display:grid;gap:6px}.d2{display:grid;grid-template-columns:1fr 1fr;gap:6px;align-items:center}.dg{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}.vg{display:grid;gap:6px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.vg label{display:flex;flex-direction:row;gap:8px;align-items:center;font-weight:400}.vg input{width:auto}.dc .mt{min-width:0;width:100%}.dc small.neg{font-weight:700}.rankgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}.rankgrid h2{font-size:16px;margin:8px 0}.rankgrid .sc{overflow-x:auto}.rankgrid table{font-size:12px}.rankgrid th,.rankgrid td{padding:5px 6px}@media(max-width:600px){.rankgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.rankgrid h2{font-size:13px}.rankgrid table{font-size:10px}.rankgrid th,.rankgrid td{padding:4px 3px}}
+.app .seg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.app .seg button{padding:9px 4px;font-size:12.5px;line-height:1.15;min-height:44px;overflow-wrap:anywhere}
  /* Menu lateral BELCHET */
 .menu-toggle{display:none}
 .app-layout{display:block}
@@ -124,16 +131,40 @@ th:first-child,td:first-child{position:sticky;left:0;background:var(--card);text
     border-radius:6px;
   }
 }
+.cover-logos{display:flex;justify-content:center;align-items:center;gap:10px;margin:12px auto;flex-wrap:wrap}.cover-logos img{width:54px;height:54px;object-fit:contain}.belchet-motto{text-align:center;margin:18px auto 24px;color:var(--text);font-size:14px;line-height:1.5}.belchet-motto em{color:var(--muted)}
 #ts{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--hd);color:#fff;padding:10px 14px;border-radius:10px;max-width:90%;z-index:5}
 #ts:empty{display:none}
 :focus-visible{outline:3px solid var(--acc);outline-offset:1px}
 /* Asegura que los campos ocultos realmente no se muestren, aunque una regla de etiqueta tenga display. */
 [hidden]{display:none!important}
+
+/* Ajuste adaptable: evitar desplazamiento horizontal de toda la aplicación */
+html,body{max-width:100%;overflow-x:hidden}
+.app,.app-layout,.main-content,#ap{min-width:0;max-width:100%;width:100%;box-sizing:border-box}
+.main-content>*{min-width:0;max-width:100%;box-sizing:border-box}
+.sc{max-width:100%;overflow-x:hidden}
+.sc table{width:100%;max-width:100%;table-layout:fixed}
+.sc th,.sc td{min-width:0;overflow-wrap:anywhere;word-break:break-word;white-space:normal}
+.rankgrid h2{text-align:center}
+.games-scroll{overflow-x:auto!important;max-width:100%;-webkit-overflow-scrolling:touch}.games-scroll table{min-width:760px}.nm{max-width:100%;text-overflow:clip}
+.rankgrid section{min-width:0;max-width:100%}
+.rankgrid .sc{overflow-x:hidden}
+.rankgrid table{table-layout:fixed;width:100%}
+.rankgrid th,.rankgrid td{overflow-wrap:anywhere;word-break:break-word}
+input,select,textarea,button{max-width:100%;box-sizing:border-box}
+@media(max-width:700px){.app-layout{min-width:0}.main-content{padding-left:8px;padding-right:8px}.rankgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.rankgrid h2{font-size:12px}.rankgrid table{font-size:9px}.rankgrid th,.rankgrid td{padding:3px 2px}.sc th,.sc td{font-size:10px;padding:3px 2px}}
 </style>
 </head>
 <body>
 <section id="lg">
- <div class="hero"><h1>BELCHET</h1><p>Versión 0.28 · conexión Firebase en preparación</p></div>
+ <div class="hero">
+  <div class="cover-brand">
+   <div class="cover-logos" id="coverLogos"></div>
+   <h1>BELCHET</h1>
+   <div class="cover-logos" id="coverLogosRight"></div>
+  </div>
+  <p>Versión 1.0 · 30 de octubre de 2026</p>
+ </div>
  <div class="bands"><i style="background:#111"></i><i style="background:#fff"></i><i style="background:#c62f2f"></i></div>
  <form class="wrap" id="f" autocomplete="off">
   <div class="seg"><button type="button" data-m="in" class="on">Entrar</button><button type="button" data-m="new">Crear cuenta</button></div>
@@ -145,9 +176,10 @@ th:first-child,td:first-child{position:sticky;left:0;background:var(--card);text
    <label class="ch"><input type="radio" name="r" value="scouter"><b>Scouter</b><span>Puede ver y editar todos los apartados</span></label>
   </fieldset>
   <p id="er" role="alert"></p>
-  <p id="demoNote" style="font-size:12px;color:#a66b00;line-height:1.4">Conexión Firebase en preparación. No uses datos reales ni médicos de menores hasta terminar las reglas de seguridad.</p>
+  <p id="demoNote" hidden></p>
   <button class="go" id="go" type="submit">Entrar</button>
  </form>
+ <p class="belchet-motto">BELCHET<br><em>“Hombre que busca su propio porvenir”</em></p>
 </section>
 <section id="ap" hidden></section>
 <div id="ts" role="status"></div>
@@ -196,7 +228,7 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pad=n=>String(n).padStart(2,'0');
 const LAB={scouter:'Scouter',scout:'Scout'};
-const SCOUT_VIEWS=['asis','cuo','pun','mat','ade','pro'];
+const SCOUT_VIEWS=['asis','cuo','pun','mat','ade','pro','rank','avis','desc'];
 // Nota: este código de registro en el HTML es solo una barrera de interfaz; no es autenticación segura del servidor.
 // El código se valida en las reglas de Firestore contra configuracion/ajustes.
 // No se incluye el código en el HTML.
@@ -204,11 +236,17 @@ const L_N='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABYCAYAAAAKsfL4AAA
 const bg=u=>'url('+u+') center/contain no-repeat';
 const G=[{k:'n',n:'Leones Negros',c:bg(L_N)},{k:'b',n:'Leones Blancos',c:bg(L_B)},{k:'r',n:'Leones Rojos',c:bg(L_R)}];
 const GM=[...G,{k:'c',n:'Leones Corte de Honor / Tropa Belchet',c:bg(L_C)}];
+const lionImgs=[['Corte',L_C],['Rojo',L_R],['Blanco',L_B],['Negro',L_N]];
+const coverLogos=$('#coverLogos'),coverLogosRight=$('#coverLogosRight');
+if(coverLogos)coverLogos.innerHTML=lionImgs.slice(0,2).map(([n,u])=>'<img src="'+u+'" alt="León '+n+'">').join('');
+if(coverLogosRight)coverLogosRight.innerHTML=lionImgs.slice(2).map(([n,u])=>'<img src="'+u+'" alt="León '+n+'">').join('');
 G.forEach(g=>{g.m=[1,2,3,4,5,6,7,8].map(i=>g.k+i)});
 const SAT=[];
-for(let d=new Date(2026,9,24);d<=new Date(2026,11,31);d.setDate(d.getDate()+7))
+for(let d=new Date(2026,0,3);d<=new Date(2026,11,31);d.setDate(d.getDate()+7))
  SAT.push({k:d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),l:d.toLocaleDateString('es-MX',{day:'numeric',month:'short'}).replace('.','')});
-const MES=[['2026-10','Oct'],['2026-11','Nov'],['2026-12','Dic']];
+const ASAT=SAT.filter(s=>s.k>='2026-10-24');
+const nombreCorto=n=>String(n||'').trim().split(/\s+/).slice(0,2).join(' ');
+const MES=Array.from({length:12},(_,i)=>['2026-'+pad(i+1),['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][i]]);
 const CUOTA=50;
 let db=null,me=null,canEdit=false,plat=true,view='asis',mode='in',people={},privatePeople={},dataUnsubs=[],legacyMigrationStarted=false;
 // El rol solo se obtiene del perfil protegido en Firestore; no se confía en datos guardados localmente.
@@ -266,7 +304,7 @@ function startDataListeners(){
  clearDataListeners();if(!me||!db||!window.fbAuth.currentUser)return;
  listenCollection('people',o=>people=o);
  if(me.role==='scouter')listenCollection('privatePeople',o=>privatePeople=o);
- listenCollection('programa',o=>prog=o);listenCollection('adelanto',o=>{adv=o;applyAdCatalog()});listenCollection('puntos',o=>pts=o);listenCollection('material',o=>mat=o);
+ listenCollection('programa',o=>prog=o);listenCollection('avisos',o=>avisos=o);listenCollection('descargasCategorias',o=>descCategorias=o);listenCollection('descargas',o=>descArchivos=o);listenCollection('adelanto',o=>{adv=o;applyAdCatalog()});listenCollection('puntos',o=>pts=o);listenCollection('material',o=>mat=o);
  if(me.role==='scouter'){listenCollection('juntas',o=>games=o);listenCollection('reuniones',o=>mt=o);listenCollection('financiero',o=>fin=o);}
 }
 function show(){$('#lg').hidden=!!me;$('#ap').hidden=!me;if(me)renderApp()}
@@ -280,7 +318,7 @@ async function save(id,patch){
  }catch(e){console.error('Error guardando integrante',e);toast('No se pudo guardar. Revisa los permisos de Firestore.')}
 }
 const C=[{k:'r',n:'Juegos de relevos',s:'Relevo'},{k:'h',n:'Juegos de habilidad',s:'Habilidad'},{k:'u',n:'Juegos rudos / contacto',s:'Rudo'},{k:'a',n:'Juegos de adiestramiento',s:'Adiestramiento'},{k:'t',n:'Temas de adiestramiento',s:'Tema'}];
-let games={},dlg=null,ged=null;
+let games={},dlg=null,ged=null,avisos={};
 let mt={},newJ=false,pk=null,dr={},ex={},delC=null;
 let pts={},mat={},adv={},prog={},fin={},fex={},dbx={},mdx={},hxo=false,rxo={},padd=false,adAdminOpen=false;
 const J=id=>games[id]||(id==='r1'?{name:'Vuelta al parque',desc:'Correr una vuelta al parque.',done:{}}:id==='t1'?{name:'Morse',desc:'Aprenderán la clave morse.',done:{}}:{name:C.find(c=>c.k===id[0]).s+' '+id.slice(1),desc:'',done:{}});
@@ -351,7 +389,7 @@ function programa(){
  }).join('');
 }
 const money=n=>'$'+Number(n).toLocaleString('es-MX');
-const cuotasTotal=()=>G.reduce((a,g)=>a+g.m.reduce((b,id)=>b+MES.reduce((c,m)=>c+(Number((P(id).fee||{})[m[0]])||0),0),0),0);
+const cuotasTotal=()=>G.reduce((a,g)=>a+g.m.reduce((b,id)=>b+MES.filter(m=>m[0]<=new Date().toISOString().slice(0,7)).reduce((c,m)=>c+(Number((P(id).fee||{})[m[0]])||0),0),0),0);
 async function saveFin(items){if(!canEdit||!db)return;try{await db.doc('financiero/main').set({items})}catch(e){toast('No se pudo guardar. Revisa que tengas acceso de Editor.')}}
 const VAC=['BCG','Hepatitis B','Hexavalente (DPaT+VIP+Hib)','Rotavirus','Neumocócica conjugada','Influenza','SRP (triple viral)','DPT (refuerzo)','Td / Tdpa','VPH','Varicela','Hepatitis A','COVID-19'];
 const SANG=['','A+','A-','B+','B-','AB+','AB-','O+','O-'],NAT=['','No sabe nadar','Básico','Intermedio','Avanzado'];
@@ -383,11 +421,11 @@ const ST={wip:'Trabajando (T)',por:'Por entregar (P)',ok:'Entregado (✓)','':'Q
 const adLabel=key=>{for(const a of AD)for(const c of a.c)if(c[0]===key)return a.g==='Especialidades'?'Especialidad de '+c[1]:(c[1]||a.g);return key};
 const fdt=t=>new Date(t).toLocaleString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
 const isoD=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
-async function logAd(id,key,s){if(!canEdit||!db)return;const it=((adv.log||{}).items)||[];try{await db.doc('adelanto/log').set({items:[...it,{t:new Date().toISOString(),id,k:key,s}]})}catch(e){}}
+async function logAd(id,key,s){if(!canEdit||!db)return;const it=((adv.log||{}).items)||[];try{await db.doc('adelanto/log').set({items:[...it,{t:new Date().toISOString(),id,k:key,s,u:me?.u||'Scouter'}]})}catch(e){}}
 function histUI(){
  const it=[...(((adv.log||{}).items)||[])].reverse();
  let h='<button class="pi" data-hx>'+(hxo?'Historial ▴':'Historial ▾')+'</button>';
- if(hxo)h+=it.length?'<div class="sc"><table><thead><tr><th>Fecha</th><th>Integrante</th><th>Adelanto</th><th>Estado</th></tr></thead><tbody>'+it.map(x=>'<tr><td>'+esc(fdt(x.t))+'</td><td>'+esc(P(x.id).name)+'</td><td>'+esc(adLabel(x.k))+'</td><td>'+esc(ST[x.s||''])+'</td></tr>').join('')+'</tbody></table></div><button class="pi" data-hp>Guardar historial en PDF</button>':'<p class="note">Todavía no hay cambios registrados.</p>';
+ if(hxo)h+=it.length?'<div class="sc"><table><thead><tr><th>Fecha</th><th>Integrante</th><th>Adelanto</th><th>Estado</th><th>Modificó</th></tr></thead><tbody>'+it.map(x=>'<tr><td>'+esc(fdt(x.t))+'</td><td>'+esc(P(x.id).name)+'</td><td>'+esc(adLabel(x.k))+'</td><td>'+esc(ST[x.s||''])+'</td><td>'+esc(x.u||'Registro anterior sin usuario')+'</td></tr>').join('')+'</tbody></table></div><button class="pi" data-hp>Guardar historial en PDF</button>':'<p class="note">Todavía no hay cambios registrados.</p>';
  return h;
 }
 // Descarga compatible con Claude y con navegadores normales (archivo local o GitHub Pages).
@@ -561,7 +599,7 @@ async function savePt(k,date,val){if(!canEdit||!db)return;try{await db.doc('punt
 async function saveMat(k,items){if(!canEdit||!db)return;try{await db.doc('material/'+k).set({items})}catch(e){toast('No se pudo guardar. Revisa que tengas acceso de Editor.')}}
 function puntos(){
  const cols=[];
- SAT.forEach((s,i)=>{cols.push({t:'s',s});const mk=s.k.slice(0,7),nx=SAT[i+1];if(!nx||nx.k.slice(0,7)!==mk)cols.push({t:'m',mk})});
+ ASAT.forEach((s,i)=>{cols.push({t:'s',s});const mk=s.k.slice(0,7),nx=ASAT[i+1];if(!nx||nx.k.slice(0,7)!==mk)cols.push({t:'m',mk})});
  const ML=Object.fromEntries(MES);
  const head='<th>Grupo</th>'+cols.map(c=>c.t==='s'?'<th>'+c.s.l+'</th>':'<th class="mtot">Total '+(ML[c.mk]||c.mk).toLowerCase()+'</th>').join('')+'<th class="mtot">Total</th>';
  const rows=G.map(g=>{
@@ -569,7 +607,7 @@ function puntos(){
   let all=0;
   const tds=cols.map(c=>{
    if(c.t==='s')return '<td><input class="fee" type="number" inputmode="numeric" data-pt="'+g.k+'|'+c.s.k+'" value="'+(v[c.s.k]===undefined?'':esc(v[c.s.k]))+'"'+(canEdit?'':' disabled')+' aria-label="'+c.s.l+'"></td>';
-   const sum=SAT.filter(s=>s.k.slice(0,7)===c.mk).reduce((a,s)=>a+(Number(v[s.k])||0),0);all+=sum;
+   const sum=ASAT.filter(s=>s.k.slice(0,7)===c.mk).reduce((a,s)=>a+(Number(v[s.k])||0),0);all+=sum;
    return '<td class="tot mtot">'+sum+'</td>';
   }).join('');
   return '<tr><td><span class="dot" style="background:'+g.c+'"></span>'+g.n+'</td>'+tds+'<td class="tot mtot">'+all+'</td></tr>';
@@ -639,7 +677,7 @@ function reuniones(){
  return h;
 }
 function picker(){return '<div class="ov"><div class="dlg" role="dialog" aria-label="Elegir actividad"><h3>Elegir actividad</h3><div class="pl">'+C.map(c=>'<b>'+c.n+'</b>'+gids(c).map(id=>'<button class="pi" data-pg="'+id+'">'+esc(J(id).name)+'</button>').join('')).join('')+'</div><button class="pi" data-pg="">Quitar actividad</button><button class="go" data-cl>Cerrar</button></div></div>'}
-function nuevaJ(){const free=SAT.filter(s=>!mt[s.k]);return '<div class="ov"><div class="dlg" role="dialog" aria-label="Nueva junta"><h3>Crear nueva junta</h3>'+(free.length?'<label>Fecha de la junta<select id="nd">'+free.map(s=>'<option value="'+s.k+'">'+esc(fechaL(s.k))+'</option>').join('')+'</select></label><button class="go" data-ncr>Crear junta</button>':'<p>Ya hay junta en todos los sábados que quedan del año.</p>')+'<button class="pi" data-cl>Cancelar</button></div></div>'}
+function nuevaJ(){const free=ASAT.filter(s=>!mt[s.k]);return '<div class="ov"><div class="dlg" role="dialog" aria-label="Nueva junta"><h3>Crear nueva junta</h3>'+(free.length?'<label>Fecha de la junta<select id="nd">'+free.map(s=>'<option value="'+s.k+'">'+esc(fechaL(s.k))+'</option>').join('')+'</select></label><button class="go" data-ncr>Crear junta</button>':'<p>Ya hay junta en todos los sábados que quedan del año.</p>')+'<button class="pi" data-cl>Cancelar</button></div></div>'}
 const gids=c=>{const ex=Object.keys(games).filter(k=>k[0]===c.k&&+k.slice(1)>10).map(k=>+k.slice(1)).sort((a,b)=>a-b);return [...Array.from({length:10},(_,i)=>i+1),...ex].map(n=>c.k+n)};
 function gedit(){const g=J(ged.id),c=C.find(c=>c.k===ged.id[0]),nw=ged.isNew;return '<div class="ov keep"><div class="dlg" role="dialog" aria-label="Editar juego"><h3>'+(nw?'Nuevo juego - '+c.n:'Editar juego')+'</h3><label>Nombre<input id="g-n" class="mt" type="text" value="'+esc(nw?'':g.name)+'"></label><label>Descripción<textarea id="g-d">'+esc(nw?'':(g.desc||''))+'</textarea></label><label>Material<textarea id="g-m">'+esc(nw?'':(g.mat||''))+'</textarea></label><button class="go" data-gs>'+(nw?'Guardar juego':'Guardar cambios')+'</button><button class="pi" data-cl>Cancelar</button></div></div>'}
 function juntas(){
@@ -648,9 +686,9 @@ function juntas(){
   for(const id of gids(c)){
    const g=J(id),dn=g.done||{};
    const nm='<input class="nm" value="'+esc(g.name)+'" readonly tabindex="-1">';
-   rows+='<tr><td>'+nm+'</td><td><button class="ib" data-d="'+id+'" aria-label="Ver descripción">i</button>'+(canEdit?'<button class="ib" data-ge="'+id+'" aria-label="Editar" style="margin-left:4px">✎</button>':'')+'</td>'+SAT.map(s=>'<td><button class="c '+(dn[s.k]?'X':'')+'" data-p="'+id+'|'+s.k+'"'+(canEdit?'':' disabled')+'>'+(dn[s.k]?'✓':'')+'</button></td>').join('')+'</tr>';
+   rows+='<tr><td>'+nm+'</td><td><button class="ib" data-d="'+id+'" aria-label="Ver descripción">i</button>'+(canEdit?'<button class="ib" data-ge="'+id+'" aria-label="Editar" style="margin-left:4px">✎</button>':'')+'</td>'+ASAT.map(s=>'<td><button class="c '+(dn[s.k]?'X':'')+'" data-p="'+id+'|'+s.k+'"'+(canEdit?'':' disabled')+'>'+(dn[s.k]?'✓':'')+'</button></td>').join('')+'</tr>';
   }
-  return '<div><h2>'+c.n+'</h2><div class="sc"><table><thead><tr><th>Juego</th><th>Info</th>'+SAT.map(s=>'<th>'+s.l+'</th>').join('')+'</tr></thead><tbody>'+rows+'</tbody></table></div>'+(canEdit?'<button class="go" data-gn="'+c.k+'">+ Agregar juego</button>':'')+'</div>';
+  return '<div><h2>'+c.n+'</h2><div class="sc games-scroll"><table><thead><tr><th>Juego</th><th>Info</th>'+ASAT.map(s=>'<th>'+s.l+'</th>').join('')+'</tr></thead><tbody>'+rows+'</tbody></table></div>'+(canEdit?'<button class="go" data-gn="'+c.k+'">+ Agregar juego</button>':'')+'</div>';
  }).join('');
 }
 function dialog(){const g=J(dlg);return '<div class="ov"><div class="dlg" role="dialog" aria-label="Descripción"><h3>'+esc(g.name)+'</h3><b>Descripción</b>'+(0?'<textarea data-ds="'+dlg+'" placeholder="Escribe de qué trata el juego">'+esc(g.desc||'')+'</textarea>':'<p>'+(esc(g.desc||'')||'Sin descripción todavía.')+'</p>')+'<b>Material</b>'+(0?'<textarea data-ms="'+dlg+'" placeholder="Material que se ocupa para este juego">'+esc(g.mat||'')+'</textarea>':'<p>'+(esc(g.mat||'')||'Sin material todavía.')+'</p>')+'<button class="go" data-cl>Cerrar</button></div></div>'}
@@ -687,37 +725,92 @@ async function report(){
  try{await dl.save({filename:'BELCHET-reporte-'+iso+'.pdf',data:doc.output('blob')});toast('Reporte guardado.')}
  catch(e){if(!e||e.code!=='declined')toast('No se pudo guardar el reporte.')}
 }
+function ranking(){
+ const asignado=id=>{const n=String(P(id).name||'').trim();return n!==''&&!/^Integrante\s+\d+$/i.test(n)};
+ const adel=[];G.forEach(g=>mem(g).filter(asignado).forEach(id=>{const v=(adv[g.k]||{}).v||{};let total=0,done=0;AD.forEach(a=>a.c.forEach(c=>{total++;if(v[id+'.'+c[0]]==='ok')done++}));adel.push({id,name:P(id).name,done,total,pct:total?done/total:0})}));
+ adel.sort((a,b)=>b.pct-a.pct||b.done-a.done||a.name.localeCompare(b.name,'es'));
+ const att=[];G.forEach(g=>mem(g).filter(asignado).forEach(id=>{const a=P(id).att||{},vals=ASAT.map(x=>a[x.k]).filter(x=>x==='X'||x==='R'||x==='F');att.push({id,name:nombreCorto(P(id).name),present:vals.filter(x=>x==='X'||x==='R').length,late:vals.filter(x=>x==='R').length,absent:vals.filter(x=>x==='F').length})}));
+ att.sort((a,b)=>b.present-a.present||a.late-b.late||a.absent-b.absent||a.name.localeCompare(b.name,'es'));
+ const medals=['👑','🥈','🥉'];const table=(arr,kind)=>'<div class="sc"><table><thead><tr><th>Lugar</th><th>Integrante</th><th>'+(kind==='a'?'Adelantos':'Asistencias')+'</th></tr></thead><tbody>'+arr.map((x,i)=>'<tr><td>'+(medals[i]||('#'+(i+1)))+'</td><td>'+esc(x.name)+'</td><td>'+(kind==='a'?(x.done+'/'+x.total+' · '+Math.round(x.pct*100)+'%'):(x.present+' · '+x.late+' retardos'))+'</td></tr>').join('')+'</tbody></table></div>';
+ return '<div class="rankgrid"><section><h2>🏅 Asistencia</h2>'+table(att,'s')+'</section><section><h2>🏅 Adelanto</h2>'+table(adel,'a')+'</section></div>';
+}
+function avisosUI(){
+ const today=new Date().toISOString().slice(0,10),items=Object.entries(avisos).filter(([id,x])=>id!=='_meta'&&x&&x.text).map(([id,x])=>({id,...x}));
+ const active=items.filter(x=>(!x.start||x.start<=today)&&(!x.end||x.end>=today)).sort((a,b)=>(a.start||'').localeCompare(b.start||''));
+ const cards=active.map(x=>'<article class="card"><h3>'+esc(x.title||'Aviso')+'</h3><p>'+esc(x.text)+'</p><small>Vigencia: '+esc(x.start||'—')+' al '+esc(x.end||'—')+'</small></article>').join('')||'<p class="note">No hay avisos vigentes.</p>';
+ const editor=canEdit?'<h2>Publicar aviso</h2><label>Título<input class="mt" id="av-title" maxlength="90"></label><label>Mensaje<textarea class="mt" id="av-text" rows="3"></textarea></label><div class="dg"><label>Fecha de inicio<input class="mt" id="av-start" type="date"></label><label>Fecha de fin<input class="mt" id="av-end" type="date"></label></div><button class="go" data-avsave>Publicar aviso</button><h3>Administrar avisos</h3>'+items.map(x=>'<p>'+esc(x.title||'Aviso')+' <button class="nb" data-avdel="'+esc(x.id)+'">Eliminar</button></p>').join(''):'';
+ return '<h2>Avisos para la tropa</h2>'+cards+editor;
+}
+function vencimientosUI(){if(!canEdit)return '';const now=new Date(),lim=new Date(now.getFullYear(),now.getMonth()+2,now.getDate()),rows=[];G.forEach(g=>mem(g).forEach(id=>{const v=P(id).venc;if(!v)return;const d=new Date(v+'T12:00:00');if(d>=new Date(now.getFullYear(),now.getMonth(),now.getDate())&&d<=lim)rows.push([P(id).name,fechaL(v),Math.ceil((d-now)/86400000)+' días'])}));return '<section class="card"><h2>⚠ Renovaciones próximas</h2>'+(rows.length?'<ul>'+rows.map(r=>'<li>'+esc(r[0])+' — vence '+esc(r[1])+' ('+esc(r[2])+')</li>').join('')+'</ul>':'<p>No hay registros por vencer en los próximos dos meses.</p>')+'</section>'}
+
+let descCategorias={},descArchivos={};
+function descargasUI(){
+ const cats=Object.entries(descCategorias||{}).map(([id,v])=>({id,...v})).sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+ const files=Object.entries(descArchivos||{}).map(([id,v])=>({id,...v})).sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+ let h='<section class="dc"><h2>Biblioteca de documentos</h2><p class="pre">Consulta y descarga materiales de la tropa, organizados por categoría.</p>';
+ if(canEdit){
+  h+='<div class="d2"><input id="dc-new" type="text" placeholder="Nueva categoría"><button class="go" data-dcnew>+ Crear categoría</button></div>';
+  h+='<label>Nombre del documento<input id="desc-name" type="text" placeholder="Ej. Manual de primeros auxilios"></label>';
+  h+='<label>Enlace compartido de Google Drive<input id="desc-url" type="url" placeholder="https://drive.google.com/..."></label>';
+  h+='<label>Categoría<select id="desc-cat"><option value="">Selecciona una categoría</option>'+cats.map(c=>'<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>').join('')+'</select></label>';
+  h+='<button class="go" data-dupload>Agregar enlace</button><small class="pre">Primero sube el archivo a Google Drive y configura el acceso como “Cualquier persona con el enlace”.</small>';
+ }
+ h+='</section>';
+ if(!cats.length)h+='<p class="note">Aún no hay categorías disponibles.</p>';
+ cats.forEach(c=>{
+  const list=files.filter(f=>f.categoryId===c.id);
+  h+='<section class="dc"><h2>'+esc(c.name)+(canEdit?'<small><button class="pdfb" data-dcedit="'+esc(c.id)+'">Renombrar</button> <button class="pdfb" data-dcdel="'+esc(c.id)+'">Eliminar</button></small>':'')+'</h2>';
+  if(!list.length)h+='<p class="pre">Todavía no hay documentos en esta categoría.</p>';
+  list.forEach(f=>{h+='<div class="pi"><b>'+esc(f.name||'Documento')+'</b><p><a href="'+esc(f.url||'#')+'" target="_blank" rel="noopener noreferrer">Abrir documento en Google Drive</a></p>'+(canEdit?' <button class="pdfb" data-dfdel="'+esc(f.id)+'">Eliminar</button>':'')+'</div>'});
+  h+='</section>';
+ });
+ if(files.some(f=>!cats.some(c=>c.id===f.categoryId)))h+='<section class="dc"><h2>Sin categoría</h2>'+files.filter(f=>!cats.some(c=>c.id===f.categoryId)).map(f=>'<div class="pi">'+esc(f.name||f.fileName||'Documento')+' <a href="'+esc(f.url||'#')+'" target="_blank" rel="noopener">Descargar</a></div>').join('')+'</section>';
+ return h;
+}
+async function uploadDescarga(){
+ if(!canEdit||!db)return toast('Solo un Scouter puede agregar documentos.');
+ const name=$('#desc-name')?.value.trim(),url=$('#desc-url')?.value.trim(),categoryId=$('#desc-cat')?.value;
+ if(!name||!url||!categoryId)return toast('Completa el nombre, enlace y categoría.');
+ let parsed;try{parsed=new URL(url)}catch(e){return toast('El enlace no es válido.');}
+ if(parsed.protocol!=='https:'||!['drive.google.com','docs.google.com'].includes(parsed.hostname))return toast('Usa un enlace https de Google Drive o Google Docs.');
+ const id='doc_'+Date.now().toString(36);
+ try{
+  await db.collection('descargas').doc(id).set({name,categoryId,url,createdAt:new Date().toISOString(),uploadedBy:me.u});
+  toast('Enlace agregado a Descargas.');renderApp();
+ }catch(e){console.error(e);toast('No se pudo guardar el enlace. Revisa las reglas de Firestore.');}
+}
+
 function renderApp(){
  if(me&&me.role==='scout'&&!SCOUT_VIEWS.includes(view))view='asis';
- const sc=view==='asis',jn=view==='jue',mj=view==='jun',pu=view==='pun',ma=view==='mat',ae=view==='ade',pa=view==='pro',fi=view==='fin',bd=view==='bd',rm=view==='rep';
+ const sc=view==='asis',rank=view==='rank',av=view==='avis',desc=view==='desc',jn=view==='jue',mj=view==='jun',pu=view==='pun',ma=view==='mat',ae=view==='ade',pa=view==='pro',fi=view==='fin',bd=view==='bd',rm=view==='rep';
  const note=!me?'':me.role==='scout'?'Modo de solo lectura: puedes ver, pero no editar.':!plat?'Tu acceso en Claude es de lectura. Pide al dueño de BELCHET permiso de Editor para poder editar.':pu?'Escribe los puntos de cada grupo en cada sábado. Al final de cada mes se suman solos.':rm?'Abre un mes para ver el informe y toca PDF para guardarlo.':bd?'Aquí se llenan los datos de cada integrante. El nombre y el puesto se actualizan en todas las pestañas.':fi?'Abre un mes y agrega cada ingreso o egreso con su monto. El saldo final se calcula con las cuotas recaudadas.':pa?'Escribe la actividad, el lugar y el responsable de cada sábado del año.':ae?'Toca una casilla: 1 toque T amarillo (trabajando), 2 toques P verde claro (por entregar), 3 toques ✓ (entregado), 4 toques la deja vacía.':ma?'Agrega el material de cada grupo: objeto, cantidad y quién lo tiene en resguardo.':mj?'Toca + Crear nueva junta, elige la fecha y después asigna hora, actividad y material.':jn?'Toca la i para ver la descripción de cada juego y toca una casilla para marcar el sábado en que toca.':sc?'Toca una casilla para cambiarla: X asistió, R llegó tarde (cuenta como asistencia), – faltó, vacía sin registrar.':'Cuota de $'+CUOTA+' al mes. Escribe cuánto pagó cada persona. Toca la N en el mes en que entró un integrante nuevo: su adeudo cuenta desde ahí.';
- const tabs=[['asis','Asistencias'],['cuo','Cuotas'],['jue','Juegos'],['jun','Juntas'],['pun','Puntuaciones'],['mat','Materiales'],['ade','Adelanto'],['pro','Programa Anual'],['fin','Financiero'],['bd','Base de datos'],['rep','Reporte mensual']];
+ const tabs=[['asis','Asistencias'],['cuo','Cuotas'],['rank','Ranking'],['avis','Avisos'],['desc','Descargas'],['jue','Juegos'],['jun','Juntas'],['pun','Puntuaciones'],['mat','Materiales'],['ade','Adelanto'],['pro','Programa Anual'],['fin','Financiero'],['bd','Base de datos'],['rep','Reporte mensual']];
  const allowed=me.role==='scout'?SCOUT_VIEWS:tabs.map(x=>x[0]);
  let h='<div class="top"><b>BELCHET</b><span>'+esc(me.u)+' · '+LAB[me.role]+'</span>'+(me.role==='scouter'?'<button data-rp>Reporte PDF</button>':'')+'<button data-out>Salir</button></div><div class="app">'
 +'<button class="menu-toggle" id="menuToggle" type="button">☰ Menú</button>'
 +'<div class="app-layout">'
 +'<aside class="seg" id="sideMenu">'+tabs.filter(x=>allowed.includes(x[0])).map(x=>'<button data-v="'+x[0]+'" class="'+(view===x[0]?'on':'')+'">'+x[1]+'</button>').join('')+'</aside>'
-+'<div class="main-content"><p class="note">'+note+'</p>';
++'<div class="main-content"><p class="note">'+note+'</p>'+(me.role==='scouter'?vencimientosUI():'');
  G.forEach(g=>{
-  if(jn||mj||pu||ma||ae||pa||fi||bd||rm)return;let rows='',gt=0;
+  if(!(sc||view==='cuo'))return;let rows='',gt=0;
   mem(g).forEach(id=>{
    const p=P(id),att=p.att||{},fee=p.fee||{};
-   const nm='<input class="nm" value="'+esc(p.name)+'" readonly tabindex="-1">';
+   const nm='<input class="nm" value="'+esc(nombreCorto(p.name))+'" readonly tabindex="-1">';
    let tds,tot,debt=null,ret=null,fal=null;
    if(sc){
-    tds=SAT.map(s=>{const v=att[s.k]||'';return '<td><button class="c '+v+'" data-a="'+id+'|'+s.k+'"'+(canEdit?'':' disabled')+'>'+(v==='F'?'–':v)+'</button></td>'}).join('');
-    fal=SAT.filter(s=>att[s.k]==='F').length;ret=SAT.filter(s=>att[s.k]==='R').length;tot=SAT.filter(s=>att[s.k]==='X'||att[s.k]==='R').length+'/'+SAT.length;
+    tds=ASAT.map(s=>{const v=att[s.k]||'';return '<td><button class="c '+v+'" data-a="'+id+'|'+s.k+'"'+(canEdit?'':' disabled')+'>'+(v==='F'?'–':v)+'</button></td>'}).join('');
+    fal=ASAT.filter(s=>att[s.k]==='F').length;ret=ASAT.filter(s=>att[s.k]==='R').length;tot=ASAT.filter(s=>att[s.k]==='X'||att[s.k]==='R').length+'/'+ASAT.length;
    }else{
     let sum=0;
     tds=MES.map(m=>{const v=Number(fee[m[0]])||0,st=p.start||'';sum+=v;if(st&&m[0]<st)return '<td class="pre">—</td>';const nb=m[0]===st?'<button class="nb on" data-s="'+id+'|'+m[0]+'"'+(canEdit?'':' disabled')+' title="Nuevo integrante">N</button>':canEdit?'<button class="nb" data-s="'+id+'|'+m[0]+'" title="Marcar como nuevo desde este mes">N</button>':'';return '<td><div class="fc"><input class="fee '+(v>=CUOTA?'ok':v>0?'part':'')+'" type="number" min="0" inputmode="numeric" data-f="'+id+'|'+m[0]+'" value="'+(v||'')+'"'+(canEdit?'':' disabled')+' aria-label="'+m[1]+'">'+nb+'</div></td>'}).join('');
-    gt+=sum;tot='$'+sum;debt=Math.max(0,CUOTA*MES.filter(m=>!p.start||m[0]>=p.start).length-sum);
+    gt+=sum;tot='$'+sum;debt=Math.max(0,CUOTA*MES.filter(m=>m[0]<=new Date().toISOString().slice(0,7)&&(!p.start||m[0]>=p.start)).length-sum);
    }
    rows+='<tr><td>'+nm+'<small class="rl">'+ROLE(id)+'</small></td>'+tds+(ret===null?'':'<td class="tot">'+fal+'</td><td class="tot">'+ret+'</td>')+'<td class="tot">'+tot+'</td>'+(debt===null?'':'<td class="debt'+(debt?'':' z')+'">$'+debt+'</td>')+'</tr>';
   });
-  const th=(sc?SAT.map(s=>s.l):MES.map(m=>m[1])).map(x=>'<th>'+x+'</th>').join('');
+  const th=(sc?ASAT.map(s=>s.l):MES.map(m=>m[1])).map(x=>'<th>'+x+'</th>').join('');
   h+='<div><h2><i style="background:'+g.c+'"></i>'+g.n+(sc?'':'<small>Total del grupo: $'+gt+'</small>')+'</h2><div class="sc"><table><thead><tr><th>Nombre</th>'+th+(sc?'<th>Faltas</th><th>Retardos</th><th>Total asistencias</th>':'<th>Total</th><th>Adeudo</th>')+'</tr></thead><tbody>'+rows+'</tbody></table></div></div>';
  });
- $('#ap').innerHTML=h+(jn?juntas():mj?reuniones():pu?puntos():ma?materiales():ae?'<button class="go" data-pp="ade">Guardar en PDF</button>'+(canEdit?histUI():'')+adelanto():pa?(canEdit?'<button class="go" data-pn>+ Agregar actividad</button>':'')+'<button class="go" data-pp="pro">Guardar en PDF</button>'+programa():fi?financiero():bd?basedatos():rm?reporteM():'')+'</div></div></div>'+(dlg?dialog():'')+(ged?gedit():'')+(padd?progDlg():'')+(newJ?nuevaJ():'')+(pk?picker():'');
+ $('#ap').innerHTML=h+(rank?ranking():av?avisosUI():desc?descargasUI():jn?juntas():mj?reuniones():pu?puntos():ma?materiales():ae?'<button class="go" data-pp="ade">Guardar en PDF</button>'+(canEdit?histUI():'')+adelanto():pa?(canEdit?'<button class="go" data-pn>+ Agregar actividad</button>':'')+'<button class="go" data-pp="pro">Guardar en PDF</button>'+programa():fi?financiero():bd?basedatos():rm?reporteM():'')+'</div></div></div>'+(dlg?dialog():'')+(ged?gedit():'')+(padd?progDlg():'')+(newJ?nuevaJ():'')+(pk?picker():'');
 }
 async function submit(e){
  e.preventDefault();err('');
@@ -758,6 +851,15 @@ async function submit(e){
 document.addEventListener('click',e=>{
  if(e.target.matches('.ov:not(.keep)')){dlg=null;newJ=false;pk=null;renderApp();return}const t=e.target.closest('button');if(!t)return;
  if(t.id==='menuToggle'){document.querySelector('#sideMenu')?.classList.toggle('menu-open');return}
+ if('dcnew' in t.dataset){const name=$('#dc-new')?.value.trim();if(!name)return toast('Escribe el nombre de la categoría.');const id='cat_'+Date.now().toString(36);db.collection('descargasCategorias').doc(id).set({name,createdAt:new Date().toISOString()}).then(()=>{toast('Categoría creada.');renderApp()}).catch(()=>toast('No se pudo crear. Revisa las reglas de Firestore.'));return}
+ if('dc' in t.dataset)return;
+ if(t.dataset.dcedit){const old=descCategorias[t.dataset.dcedit]?.name||'',name=prompt('Nuevo nombre de la categoría:',old);if(name&&name.trim())db.collection('descargasCategorias').doc(t.dataset.dcedit).update({name:name.trim()}).then(()=>{toast('Categoría actualizada.');renderApp()}).catch(()=>toast('No se pudo editar la categoría.'));return}
+ if(t.dataset.dcdel){if(!confirm('¿Eliminar esta categoría? Los archivos no se borrarán, pero quedarán sin categoría.'))return;db.collection('descargasCategorias').doc(t.dataset.dcdel).delete().then(()=>{toast('Categoría eliminada.');renderApp()}).catch(()=>toast('No se pudo eliminar la categoría.'));return}
+ if('dupload' in t.dataset){uploadDescarga();return}
+ if(t.dataset.dfdel){const f=descArchivos[t.dataset.dfdel];if(!f||!confirm('¿Eliminar este documento?'))return;db.collection('descargas').doc(t.dataset.dfdel).delete().then(()=>{toast('Enlace eliminado de BELCHET. El archivo original permanece en Drive.');renderApp()}).catch(()=>toast('No se pudo eliminar el enlace.'));return}
+
+ if(t.dataset.avsave!==undefined){const title=$('#av-title').value.trim(),textv=$('#av-text').value.trim(),start=$('#av-start').value,end=$('#av-end').value;if(!title||!textv||!start||!end||end<start)return toast('Completa título, mensaje y fechas válidas.');const id='av_'+Date.now().toString(36);db.doc('avisos/'+id).set({title,text:textv,start,end,createdAt:new Date().toISOString()}).then(()=>toast('Aviso publicado.')).catch(()=>toast('No se pudo publicar. Revisa las reglas de Firestore.'));return}
+ if(t.dataset.avdel){if(confirm('¿Eliminar este aviso?'))db.doc('avisos/'+t.dataset.avdel).delete().catch(()=>toast('No se pudo eliminar.'));return}
  if(t.dataset.m){mode=t.dataset.m;document.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',b===t));$('#go').textContent=mode==='new'?'Crear cuenta':'Entrar';$('#rt').hidden=mode!=='new';$('#cc').hidden=mode!=='new';$('#code').required=mode==='new'&&document.querySelector('input[name=r]:checked').value==='scouter';if(mode!=='new'){$('#code').value=''}err('')}
  else if(t.dataset.v){if(me&&me.role==='scout'&&(!SCOUT_VIEWS.includes(t.dataset.v)||t.dataset.v==='bd')){view='asis';toast('La Base de datos es exclusiva para Scouters.');return}view=t.dataset.v;renderApp()}
  else if('out' in t.dataset){me=null;canEdit=false;clearDataListeners();if(window.fbAuth)window.fbAuth.signOut().catch(()=>{});show()}
@@ -786,7 +888,7 @@ $('#f').addEventListener('submit',submit);
   return;
  }
 
- $('#demoNote').textContent='BELCHET está conectado a Firebase.';
+ $('#demoNote').hidden=true;$('#demoNote').textContent='';
 
  try{
   await window.fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
