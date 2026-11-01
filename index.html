@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>BELCHET</title>
+<title>BELCHET · Versión 2.0</title>
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="theme-color" content="#17365D">
 <meta name="mobile-web-app-capable" content="yes">
@@ -153,6 +153,39 @@ html,body{max-width:100%;overflow-x:hidden}
 .rankgrid th,.rankgrid td{overflow-wrap:anywhere;word-break:break-word}
 input,select,textarea,button{max-width:100%;box-sizing:border-box}
 @media(max-width:700px){.app-layout{min-width:0}.main-content{padding-left:8px;padding-right:8px}.rankgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.rankgrid h2{font-size:12px}.rankgrid table{font-size:9px}.rankgrid th,.rankgrid td{padding:3px 2px}.sc th,.sc td{font-size:10px;padding:3px 2px}}
+
+/* BELCHET 1.6: tablas anchas con nombre fijo y desplazamiento horizontal */
+.sc.wide-scroll{overflow-x:auto!important;overflow-y:hidden;-webkit-overflow-scrolling:touch;max-width:100%;}
+.sc.wide-scroll table{width:max-content!important;min-width:100%;max-width:none!important;table-layout:auto!important;}
+.sc.wide-scroll th,.sc.wide-scroll td{white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important;min-width:64px;}
+.sc.wide-scroll th:first-child,.sc.wide-scroll td:first-child{position:sticky;left:0;z-index:2;min-width:118px;width:118px;max-width:118px;white-space:normal!important;overflow-wrap:anywhere!important;background:var(--card);box-shadow:2px 0 4px rgba(0,0,0,.12);}
+.sc.wide-scroll thead th:first-child{z-index:3;}
+/* Adelanto: nombres legibles y columna fija; el catálogo se desplaza horizontalmente. */
+.sc:has(table.ad){max-width:100%;overflow-x:auto!important;overflow-y:hidden;-webkit-overflow-scrolling:touch;}
+table.ad{width:max-content;min-width:100%;table-layout:auto;}
+table.ad th:first-child,table.ad td:first-child{position:sticky;left:0;width:170px;min-width:170px;max-width:170px;white-space:normal;overflow-wrap:break-word;text-align:left;background:var(--card);z-index:2;box-shadow:2px 0 4px rgba(0,0,0,.14);}
+table.ad thead th:first-child{z-index:4;}
+table.ad td.ad-name{font-weight:700;font-size:14px;line-height:1.3;}
+
+
+
+/* Navegación superior y pantalla Inicio integradas al tema original BELCHET */
+.belchet-nav{display:flex;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;padding:2px 1px 8px;scrollbar-width:thin}
+.belchet-nav button{flex:0 0 auto;display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);padding:9px 12px;font-weight:700;white-space:nowrap}
+.belchet-nav button span{font-size:16px;color:var(--mut);min-width:17px;text-align:center}
+.belchet-nav button.on{background:var(--acc);border-color:var(--acc);color:#14241d}
+.belchet-nav button.on span{color:#14241d}
+.home-panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:0 0 12px}
+.home-panel h2{padding-bottom:9px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.home-list{display:grid;gap:0}
+.home-list article{padding:10px 2px;border-bottom:1px solid var(--line)}
+.home-list article:last-child{border-bottom:0}
+.home-list article b{display:block;color:var(--ink)}
+.home-list article span,.home-list article small{display:block;color:var(--mut);font-size:13px}
+.home-list article p{margin:4px 0;color:var(--ink);white-space:pre-wrap}
+.app-layout{display:block}.main-content{min-width:0;width:100%}
+@media(max-width:700px){.app{padding:9px}.belchet-nav{margin:0 -2px 3px}.belchet-nav button{padding:8px 10px;font-size:13px}.home-panel{padding:12px}}
+
 </style>
 </head>
 <body>
@@ -163,7 +196,7 @@ input,select,textarea,button{max-width:100%;box-sizing:border-box}
    <h1>BELCHET</h1>
    <div class="cover-logos" id="coverLogosRight"></div>
   </div>
-  <p>Versión 1.0 · 30 de octubre de 2026</p>
+  <p>Versión 1.7 · 31 de octubre de 2026</p>
  </div>
  <div class="bands"><i style="background:#111"></i><i style="background:#fff"></i><i style="background:#c62f2f"></i></div>
  <form class="wrap" id="f" autocomplete="off">
@@ -228,7 +261,7 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pad=n=>String(n).padStart(2,'0');
 const LAB={scouter:'Scouter',scout:'Scout'};
-const SCOUT_VIEWS=['asis','cuo','pun','mat','ade','pro','rank','avis','desc'];
+const SCOUT_VIEWS=['home','asis','cuo','pun','mat','ade','pro','rank','desc'];
 // Nota: este código de registro en el HTML es solo una barrera de interfaz; no es autenticación segura del servidor.
 // El código se valida en las reglas de Firestore contra configuracion/ajustes.
 // No se incluye el código en el HTML.
@@ -248,7 +281,7 @@ const ASAT=SAT.filter(s=>s.k>='2026-10-24');
 const nombreCorto=n=>String(n||'').trim().split(/\s+/).slice(0,2).join(' ');
 const MES=Array.from({length:12},(_,i)=>['2026-'+pad(i+1),['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][i]]);
 const CUOTA=50;
-let db=null,me=null,canEdit=false,plat=true,view='asis',mode='in',people={},privatePeople={},dataUnsubs=[],legacyMigrationStarted=false;
+let db=null,me=null,canEdit=false,plat=true,view='home',mode='in',people={},privatePeople={},dataUnsubs=[],legacyMigrationStarted=false;
 // El rol solo se obtiene del perfil protegido en Firestore; no se confía en datos guardados localmente.
 const PRIVATE_FIELDS=['cum','foto','nac','venc','pad','tpad','mad','tmad','dir','med'];
 const P=id=>{const d=people[id]||{},priv=privatePeople[id]||{};return {...d,...priv,name:d.name||'Integrante '+id.slice(1),att:d.att||{},fee:d.fee||{}}};
@@ -302,16 +335,31 @@ async function migrateLegacyPrivateData(){
 function listenCollection(name,cb){if(!db)return;const unsub=db.collection(name).onSnapshot(s=>{const o={};s.docs.forEach(d=>o[d.id]=d.data());cb(o);if(name==='people'&&me&&me.role==='scouter')migrateLegacyPrivateData();if(me)renderApp()},e=>{console.warn('Lectura bloqueada: '+name,e);if(me)toast('No se pudo cargar '+name+'. Revisa los permisos de Firestore.')});dataUnsubs.push(unsub)}
 function startDataListeners(){
  clearDataListeners();if(!me||!db||!window.fbAuth.currentUser)return;
- listenCollection('people',o=>people=o);
- if(me.role==='scouter')listenCollection('privatePeople',o=>privatePeople=o);
+ listenCollection('people',o=>{people=o;if(me&&me.role==='scouter')syncRenewalDatesForScouts()});
+ if(me.role==='scouter')listenCollection('privatePeople',o=>{privatePeople=o;syncRenewalDatesForScouts()});
  listenCollection('programa',o=>prog=o);listenCollection('avisos',o=>avisos=o);listenCollection('descargasCategorias',o=>descCategorias=o);listenCollection('descargas',o=>descArchivos=o);listenCollection('adelanto',o=>{adv=o;applyAdCatalog()});listenCollection('puntos',o=>pts=o);listenCollection('material',o=>mat=o);
  if(me.role==='scouter'){listenCollection('juntas',o=>games=o);listenCollection('reuniones',o=>mt=o);listenCollection('financiero',o=>fin=o);}
+}
+let renewalSyncRunning=false;
+async function syncRenewalDatesForScouts(){
+ if(renewalSyncRunning||!canEdit||!db)return;
+ renewalSyncRunning=true;
+ try{
+  for(const id of Object.keys(people)){
+   const privateDate=(privatePeople[id]||{}).venc||'';
+   const publicDate=(people[id]||{}).fechaRenovacion||'';
+   if(privateDate!==publicDate)await db.doc('people/'+id).set({fechaRenovacion:privateDate},{merge:true});
+  }
+ }catch(e){console.warn('No se pudieron sincronizar las fechas de renovación para la portada.',e)}
+ finally{renewalSyncRunning=false}
 }
 function show(){$('#lg').hidden=!!me;$('#ap').hidden=!me;if(me)renderApp()}
 async function save(id,patch){
  if(!canEdit||!db)return;
  try{
   const merged={...P(id),...patch};const pub={...merged};const priv={...privatePeople[id]};
+  // Publicar únicamente la fecha de renovación para que los Scouts puedan consultar los próximos vencimientos.
+  pub.fechaRenovacion=merged.venc||'';
   PRIVATE_FIELDS.forEach(k=>{if(Object.prototype.hasOwnProperty.call(merged,k)){priv[k]=merged[k];delete pub[k]}});
   await db.doc('people/'+id).set(pub);
   if(Object.keys(priv).length)await db.doc('privatePeople/'+id).set(priv);
@@ -346,7 +394,8 @@ async function saveM(d,rows){
 }
 const ROLES=['Guía','Subguía','Primer scout','Segundo scout','Tercer scout','Cuarto scout','Quinto scout','Sexto scout'];
 const ROLE=id=>(people[id]&&people[id].rol)||ROLES[+id.slice(1)-1]||'';
-const mem=g=>{const f=id=>{const r=ROLES.indexOf(ROLE(id));return r<0?99:r};return [...g.m].sort((a,b)=>f(a)-f(b))};
+const hasRealName=id=>{const n=String((people[id]||{}).name||'').trim();return !!n&&!/^Integrante\s+\d+$/i.test(n)};
+const mem=g=>{const f=id=>{const r=ROLES.indexOf(ROLE(id));return r<0?99:r};return [...g.m].filter(hasRealName).sort((a,b)=>f(a)-f(b))};
 const AD_BASE=[{g:'Promesa',s:1,c:[['promesa','']]},{g:'Progresiones',c:[['pista','Pista'],['senda','Senda'],['busqueda','Búsqueda'],['desafio','Desafío']]},{g:'Especialidades',c:[['deportes','Deportes'],['humanidades','Humanidades'],['ecologia','Ecología'],['expresion','Expresión y comunicación'],['tecnologia','Tecnología y ciencia'],['otra','Por definir']]},{g:'Vida al aire libre',s:1,c:[['aire','']]},{g:'Cintas y barras',c:[['cintas','Cintas de patrulla'],['bsub','Barra de subguía'],['bguia','Barra de guía']]},{g:'IDO',s:1,c:[['ido','']]}];
 let AD=AD_BASE.map(a=>({...a,c:a.c.map(c=>[...c])}));
 function adCatState(){return adv.catalogo||{items:[],hiddenBase:[],order:[]}}
@@ -360,8 +409,8 @@ function adelanto(){
  AD.forEach((a,i)=>{r1+=gap;if(a.s)r1+='<th rowspan="2">'+a.g+'</th>';else{r1+='<th colspan="'+a.c.length+'">'+a.g+'</th>';r2+=a.c.map(c=>'<th>'+c[1]+'</th>').join('')}});
  return catalogUI()+G.map(g=>{
   const v=(adv[g.k]||{}).v||{};
-  const rows=mem(g).map(id=>{
-   let t='<td>'+esc(P(id).name)+'<small class="rl">'+ROLE(id)+'</small></td>';
+  const rows=mem(g).filter(id=>{const n=String(P(id).name||'').trim();return n!==''&&!/^Integrante\s+\d+$/i.test(n)}).map(id=>{
+   let t='<td class="ad-name">'+esc(P(id).name)+'<small class="rl">'+ROLE(id)+'</small></td>';
    AD.forEach((a,i)=>{t+='<td class="gap"></td>';a.c.forEach(c=>{const s=v[id+'.'+c[0]];t+='<td><button class="c '+(s==='ok'?'X':s==='por'?'G':s==='wip'?'W':'')+'" data-ad="'+id+'|'+c[0]+'"'+(canEdit?'':' disabled')+' aria-label="'+esc(c[1]||a.g)+'">'+(s==='ok'?'✓':s==='por'?'P':s==='wip'?'T':'')+'</button></td>'})});
    return '<tr>'+t+'</tr>';
   }).join('');
@@ -502,8 +551,9 @@ const adelEstadoMes=(k,estado,kind)=>{
  const date=reportAdDate(k,kind);
  return [...latest.values()].filter(x=>x.s===estado).map(x=>[P(x.id).name||'Integrante',adLabel(x.k),date,reportAdActivity(k,kind)]);
 };
-const adelEntregados=k=>adelEstadoMes(k,'ok','delivered');
-const adelPend=k=>adelEstadoMes(k,'por','pending');
+const adelEstadoConExtras=(k,estado,kind)=>{const base=adelEstadoMes(k,estado,kind),log=adv.log||{},key=k+'|'+kind,deleted=log.deleted?.[key]||[],filtered=base.filter(r=>!deleted.includes(r[0]+'|'+r[1])),extra=(log.extras?.[key]||[]).map(x=>[x.name,x.item,x.date,x.activity]);return [...filtered,...extra]};
+const adelEntregados=k=>adelEstadoConExtras(k,'ok','delivered');
+const adelPend=k=>adelEstadoConExtras(k,'por','pending');
 function rep(k){
  const y=+k.slice(0,4),mi=+k.slice(5,7)-1,pk=prevK(k),nk=nextK(k),now=new Date();
  let s0=0;for(let i=1;i<=12;i++){const m='2026-'+pad(i);if(m<pk)s0+=net(m).t}
@@ -511,8 +561,8 @@ function rep(k){
  const fr=[['Saldo al inicio de '+mesN(pk),'',money(s0)],['Cuotas del mes','Ingreso',money(nt.cu)],...nt.l.map(x=>[x.n||'-',x.t==='ingreso'?'Ingreso':'Egreso',money(Number(x.a)||0)]),['Total de '+mesN(pk)+' (ingresos - egresos)','',money(nt.t)],['SALDO ACTUAL','',money(s0+nt.t)]];
  return [
   {t:'Datos del informe',h:['Fecha de informe','Inicio del periodo','Fin del periodo'],r:[[fd(now),fd(new Date(y,mi,1)),fd(new Date(y,mi+1,0))]]},
-  {t:'Informe de actividades pasadas',h:['Fecha','Actividad'],r:monthSat(k)},
-  {t:'Actividades del próximo mes ('+mesN(nk)+')',h:['Fecha','Actividad'],r:monthSat(nk)},
+  {t:'Actividades del mes anterior ('+mesN(pk)+')',h:['Fecha','Actividad'],r:monthSat(pk)},
+  {t:'Actividades próximas',h:['Fecha','Actividad'],r:monthSat(k)},
   {t:'Adelantos entregados',h:['Integrante','Adelanto','Fecha','Actividad'],r:adelEntregados(k),dateEdit:'delivered'},
   {t:'Adelantos por entregar',h:['Integrante','Adelanto','Fecha','Actividad'],r:adelPend(k),dateEdit:'pending'},
   {t:'Informe financiero ('+mesN(pk)+')',h:['Concepto','Tipo','Monto'],r:fr},
@@ -523,7 +573,7 @@ function reporteM(){
  return Array.from({length:12},(_,i)=>'2026-'+pad(i+1)).map(k=>{
   const open=rxo[k];
   let h='<div class="jb"><div class="jr"><button class="jt" data-rx="'+k+'"><b>'+mesN(k)+' 2026</b><i>'+(open?'▴':'▾')+'</i></button><button class="pdfb" data-rq="'+k+'">PDF</button></div>';
-  if(open)h+=rep(k).map(s=>'<b>'+esc(s.t)+'</b><div class="sc"><table><thead><tr>'+s.h.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'+(s.r.length?s.r:[['Sin registros']]).map(r=>'<tr>'+r.map((c,j)=>'<td>'+esc(c)+(s.dateEdit&&j===2&&canEdit?' <button class="nb" title="Modificar fecha" aria-label="Modificar fecha" data-eddate="'+k+'|'+s.dateEdit+'">✎</button>':'')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>').join('');
+  if(open)h+=rep(k).map(s=>{const isAd=s.dateEdit==='delivered'||s.dateEdit==='pending';return '<div class="report-subhead"><b>'+esc(s.t)+'</b>'+(isAd&&canEdit?' <button class="nb" data-radd="'+k+'|'+s.dateEdit+'">+ Agregar manualmente</button>':'')+'</div><div class="sc"><table><thead><tr>'+s.h.map(x=>'<th>'+x+'</th>').join('')+(isAd&&canEdit?'<th>Acción</th>':'')+'</tr></thead><tbody>'+(s.r.length?s.r:[['Sin registros']]).map((r,ri)=>'<tr>'+r.map((c,j)=>'<td>'+esc(c)+(s.dateEdit&&j===2&&canEdit?' <button class="nb" title="Modificar fecha" aria-label="Modificar fecha" data-eddate="'+k+'|'+s.dateEdit+'">✎</button>':'')+'</td>').join('')+(isAd&&canEdit?'<td><button class="nb" data-rdel="'+k+'|'+s.dateEdit+'|'+ri+'">Eliminar</button></td>':'')+'</tr>').join('')+'</tbody></table></div>'}).join('');
   return h+'</div>';
  }).join('');
 }
@@ -731,7 +781,7 @@ function ranking(){
  adel.sort((a,b)=>b.pct-a.pct||b.done-a.done||a.name.localeCompare(b.name,'es'));
  const att=[];G.forEach(g=>mem(g).filter(asignado).forEach(id=>{const a=P(id).att||{},vals=ASAT.map(x=>a[x.k]).filter(x=>x==='X'||x==='R'||x==='F');att.push({id,name:nombreCorto(P(id).name),present:vals.filter(x=>x==='X'||x==='R').length,late:vals.filter(x=>x==='R').length,absent:vals.filter(x=>x==='F').length})}));
  att.sort((a,b)=>b.present-a.present||a.late-b.late||a.absent-b.absent||a.name.localeCompare(b.name,'es'));
- const medals=['👑','🥈','🥉'];const table=(arr,kind)=>'<div class="sc"><table><thead><tr><th>Lugar</th><th>Integrante</th><th>'+(kind==='a'?'Adelantos':'Asistencias')+'</th></tr></thead><tbody>'+arr.map((x,i)=>'<tr><td>'+(medals[i]||('#'+(i+1)))+'</td><td>'+esc(x.name)+'</td><td>'+(kind==='a'?(x.done+'/'+x.total+' · '+Math.round(x.pct*100)+'%'):(x.present+' · '+x.late+' retardos'))+'</td></tr>').join('')+'</tbody></table></div>';
+ const placeLabel=n=>n===1?'1er lugar':n===2?'2do lugar':n===3?'3er lugar':n+'º lugar';const table=(arr,kind)=>{let prev=null,place=0;const metric=x=>kind==='a'?x.pct+'|'+x.done:x.present+'|'+x.late;return '<div class="sc"><table><thead><tr><th>Lugar</th><th>Integrante</th><th>'+(kind==='a'?'Adelantos':'Asistencias')+'</th></tr></thead><tbody>'+arr.map(x=>{const m=metric(x);if(m!==prev){place++;prev=m}return '<tr><td>'+placeLabel(place)+'</td><td>'+esc(x.name)+'</td><td>'+(kind==='a'?(x.done+'/'+x.total+' · '+Math.round(x.pct*100)+'%'):(x.present+' · '+x.late+' retardos'))+'</td></tr>'}).join('')+'</tbody></table></div>'};
  return '<div class="rankgrid"><section><h2>🏅 Asistencia</h2>'+table(att,'s')+'</section><section><h2>🏅 Adelanto</h2>'+table(adel,'a')+'</section></div>';
 }
 function avisosUI(){
@@ -741,7 +791,26 @@ function avisosUI(){
  const editor=canEdit?'<h2>Publicar aviso</h2><label>Título<input class="mt" id="av-title" maxlength="90"></label><label>Mensaje<textarea class="mt" id="av-text" rows="3"></textarea></label><div class="dg"><label>Fecha de inicio<input class="mt" id="av-start" type="date"></label><label>Fecha de fin<input class="mt" id="av-end" type="date"></label></div><button class="go" data-avsave>Publicar aviso</button><h3>Administrar avisos</h3>'+items.map(x=>'<p>'+esc(x.title||'Aviso')+' <button class="nb" data-avdel="'+esc(x.id)+'">Eliminar</button></p>').join(''):'';
  return '<h2>Avisos para la tropa</h2>'+cards+editor;
 }
-function vencimientosUI(){if(!canEdit)return '';const now=new Date(),lim=new Date(now.getFullYear(),now.getMonth()+2,now.getDate()),rows=[];G.forEach(g=>mem(g).forEach(id=>{const v=P(id).venc;if(!v)return;const d=new Date(v+'T12:00:00');if(d>=new Date(now.getFullYear(),now.getMonth(),now.getDate())&&d<=lim)rows.push([P(id).name,fechaL(v),Math.ceil((d-now)/86400000)+' días'])}));return '<section class="card"><h2>⚠ Renovaciones próximas</h2>'+(rows.length?'<ul>'+rows.map(r=>'<li>'+esc(r[0])+' — vence '+esc(r[1])+' ('+esc(r[2])+')</li>').join('')+'</ul>':'<p>No hay registros por vencer en los próximos dos meses.</p>')+'</section>'}
+function renovacionesHTML(){
+ const now=new Date(),lim=new Date(now.getFullYear(),now.getMonth()+2,now.getDate()),rows=[];
+ G.forEach(g=>mem(g).forEach(id=>{const v=P(id).fechaRenovacion||P(id).venc;if(!v)return;const d=new Date(v+'T12:00:00');if(d>=new Date(now.getFullYear(),now.getMonth(),now.getDate())&&d<=lim)rows.push([P(id).name,fechaL(v),Math.ceil((d-now)/86400000),d.getTime()])}));
+ rows.sort((a,b)=>a[3]-b[3]);
+ return '<section class="home-panel"><h2>◷ Próximos vencimientos</h2>'+(rows.length?'<div class="home-list">'+rows.slice(0,8).map(r=>'<article><b>'+esc(r[0])+'</b><span>Vence '+esc(r[1])+' · '+r[2]+' días</span></article>').join('')+'</div>':'<p class="pre">No hay renovaciones próximas en los siguientes dos meses.</p>')+'</section>';
+}
+function proximasActividadesHTML(){
+ const today=new Date();today.setHours(0,0,0,0);const upcoming=[];let d=new Date(today);
+ while(d.getDay()!==6)d.setDate(d.getDate()+1);
+ for(let i=0;i<5;i++){const key=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),x=(((prog[String(d.getFullYear())]||{}).r)||{})[key];if(x&&['Actividad','Campamento'].includes(x.t))upcoming.push({date:new Date(d),name:x.a||x.t,place:x.l||'Lugar por confirmar',type:x.t});d.setDate(d.getDate()+7)}
+ const body=upcoming.length?'<div class="home-list">'+upcoming.map(x=>'<article><b>'+esc(x.name)+'</b><span>'+esc(x.date.toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long'}))+' · '+esc(x.place)+'</span><small>'+esc(x.type)+'</small></article>').join('')+'</div>':'<p class="pre">No hay campamentos o actividades programados en los próximos cinco sábados.</p>';
+ return '<section class="home-panel"><h2>⚑ Próximas actividades</h2>'+body+'</section>';
+}
+function homeDashboard(){
+ const today=new Date().toISOString().slice(0,10),items=Object.entries(avisos||{}).filter(([id,x])=>id!=='_meta'&&x&&x.text).map(([id,x])=>({id,...x}));
+ const active=items.filter(x=>(!x.start||x.start<=today)&&(!x.end||x.end>=today)).sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+ const notices=active.length?'<div class="home-list">'+active.map(x=>'<article><b>'+esc(x.title||'Aviso')+'</b><p>'+esc(x.text)+'</p><small>Vigente '+esc(x.start||'')+(x.end?' al '+esc(x.end):'')+'</small></article>').join('')+'</div>':'<p class="pre">No hay avisos vigentes por el momento.</p>';
+ return '<section class="home-panel"><h2>⚑ Avisos vigentes</h2>'+notices+'</section>'+renovacionesHTML()+proximasActividadesHTML();
+}
+function vencimientosUI(){return canEdit?renovacionesHTML():''}
 
 let descCategorias={},descArchivos={};
 function descargasUI(){
@@ -783,14 +852,12 @@ async function uploadDescarga(){
 function renderApp(){
  if(me&&me.role==='scout'&&!SCOUT_VIEWS.includes(view))view='asis';
  const sc=view==='asis',rank=view==='rank',av=view==='avis',desc=view==='desc',jn=view==='jue',mj=view==='jun',pu=view==='pun',ma=view==='mat',ae=view==='ade',pa=view==='pro',fi=view==='fin',bd=view==='bd',rm=view==='rep';
- const note=!me?'':me.role==='scout'?'Modo de solo lectura: puedes ver, pero no editar.':!plat?'Tu acceso en Claude es de lectura. Pide al dueño de BELCHET permiso de Editor para poder editar.':pu?'Escribe los puntos de cada grupo en cada sábado. Al final de cada mes se suman solos.':rm?'Abre un mes para ver el informe y toca PDF para guardarlo.':bd?'Aquí se llenan los datos de cada integrante. El nombre y el puesto se actualizan en todas las pestañas.':fi?'Abre un mes y agrega cada ingreso o egreso con su monto. El saldo final se calcula con las cuotas recaudadas.':pa?'Escribe la actividad, el lugar y el responsable de cada sábado del año.':ae?'Toca una casilla: 1 toque T amarillo (trabajando), 2 toques P verde claro (por entregar), 3 toques ✓ (entregado), 4 toques la deja vacía.':ma?'Agrega el material de cada grupo: objeto, cantidad y quién lo tiene en resguardo.':mj?'Toca + Crear nueva junta, elige la fecha y después asigna hora, actividad y material.':jn?'Toca la i para ver la descripción de cada juego y toca una casilla para marcar el sábado en que toca.':sc?'Toca una casilla para cambiarla: X asistió, R llegó tarde (cuenta como asistencia), – faltó, vacía sin registrar.':'Cuota de $'+CUOTA+' al mes. Escribe cuánto pagó cada persona. Toca la N en el mes en que entró un integrante nuevo: su adeudo cuenta desde ahí.';
- const tabs=[['asis','Asistencias'],['cuo','Cuotas'],['rank','Ranking'],['avis','Avisos'],['desc','Descargas'],['jue','Juegos'],['jun','Juntas'],['pun','Puntuaciones'],['mat','Materiales'],['ade','Adelanto'],['pro','Programa Anual'],['fin','Financiero'],['bd','Base de datos'],['rep','Reporte mensual']];
+ const note=!me?'':view==='home'?'':me.role==='scout'?'Modo de solo lectura: puedes ver, pero no editar.':!plat?'Tu acceso en Claude es de lectura. Pide al dueño de BELCHET permiso de Editor para poder editar.':pu?'Escribe los puntos de cada grupo en cada sábado. Al final de cada mes se suman solos.':rm?'Abre un mes para ver el informe y toca PDF para guardarlo.':bd?'Aquí se llenan los datos de cada integrante. El nombre y el puesto se actualizan en todas las pestañas.':fi?'Abre un mes y agrega cada ingreso o egreso con su monto. El saldo final se calcula con las cuotas recaudadas.':pa?'Escribe la actividad, el lugar y el responsable de cada sábado del año.':ae?'Toca una casilla: 1 toque T amarillo (trabajando), 2 toques P verde claro (por entregar), 3 toques ✓ (entregado), 4 toques la deja vacía.':ma?'Agrega el material de cada grupo: objeto, cantidad y quién lo tiene en resguardo.':mj?'Toca + Crear nueva junta, elige la fecha y después asigna hora, actividad y material.':jn?'Toca la i para ver la descripción de cada juego y toca una casilla para marcar el sábado en que toca.':sc?'Toca una casilla para cambiarla: X asistió, R llegó tarde (cuenta como asistencia), – faltó, vacía sin registrar.':view==='cuo'?'Cuota de $'+CUOTA+' al mes. Escribe cuánto pagó cada persona. Toca la N en el mes en que entró un integrante nuevo: su adeudo cuenta desde ahí.':'';
+ const tabs=[['home','Inicio'],['asis','Asistencias'],['cuo','Cuotas'],['rank','Ranking'],['avis','Avisos'],['desc','Descargas'],['jue','Juegos'],['jun','Juntas'],['pun','Puntuaciones'],['mat','Materiales'],['ade','Adelanto'],['pro','Programa Anual'],['fin','Financiero'],['bd','Base de datos'],['rep','Reporte mensual']];
  const allowed=me.role==='scout'?SCOUT_VIEWS:tabs.map(x=>x[0]);
  let h='<div class="top"><b>BELCHET</b><span>'+esc(me.u)+' · '+LAB[me.role]+'</span>'+(me.role==='scouter'?'<button data-rp>Reporte PDF</button>':'')+'<button data-out>Salir</button></div><div class="app">'
-+'<button class="menu-toggle" id="menuToggle" type="button">☰ Menú</button>'
-+'<div class="app-layout">'
-+'<aside class="seg" id="sideMenu">'+tabs.filter(x=>allowed.includes(x[0])).map(x=>'<button data-v="'+x[0]+'" class="'+(view===x[0]?'on':'')+'">'+x[1]+'</button>').join('')+'</aside>'
-+'<div class="main-content"><p class="note">'+note+'</p>'+(me.role==='scouter'?vencimientosUI():'');
++'<nav class="belchet-nav" aria-label="Secciones">'+tabs.filter(x=>allowed.includes(x[0])).map(x=>{const icons={home:'⌂',asis:'✓',cuo:'$',rank:'🏅',avis:'⚑',desc:'⇩',jue:'⚔',jun:'⚑',pun:'★',mat:'▤',ade:'◆',pro:'▦',fin:'$',bd:'♟',rep:'▧'};return '<button data-v="'+x[0]+'" class="'+(view===x[0]?'on':'')+'"><span aria-hidden="true">'+icons[x[0]]+'</span>'+x[1]+'</button>'}).join('')+'</nav>'
++'<div class="app-layout"><div class="main-content"><p class="note">'+note+'</p>';
  G.forEach(g=>{
   if(!(sc||view==='cuo'))return;let rows='',gt=0;
   mem(g).forEach(id=>{
@@ -808,9 +875,9 @@ function renderApp(){
    rows+='<tr><td>'+nm+'<small class="rl">'+ROLE(id)+'</small></td>'+tds+(ret===null?'':'<td class="tot">'+fal+'</td><td class="tot">'+ret+'</td>')+'<td class="tot">'+tot+'</td>'+(debt===null?'':'<td class="debt'+(debt?'':' z')+'">$'+debt+'</td>')+'</tr>';
   });
   const th=(sc?ASAT.map(s=>s.l):MES.map(m=>m[1])).map(x=>'<th>'+x+'</th>').join('');
-  h+='<div><h2><i style="background:'+g.c+'"></i>'+g.n+(sc?'':'<small>Total del grupo: $'+gt+'</small>')+'</h2><div class="sc"><table><thead><tr><th>Nombre</th>'+th+(sc?'<th>Faltas</th><th>Retardos</th><th>Total asistencias</th>':'<th>Total</th><th>Adeudo</th>')+'</tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+  h+='<div><h2><i style="background:'+g.c+'"></i>'+g.n+(sc?'':'<small>Total del grupo: $'+gt+'</small>')+'</h2><div class="sc wide-scroll"><table><thead><tr><th>Nombre</th>'+th+(sc?'<th>Faltas</th><th>Retardos</th><th>Total asistencias</th>':'<th>Total</th><th>Adeudo</th>')+'</tr></thead><tbody>'+rows+'</tbody></table></div></div>';
  });
- $('#ap').innerHTML=h+(rank?ranking():av?avisosUI():desc?descargasUI():jn?juntas():mj?reuniones():pu?puntos():ma?materiales():ae?'<button class="go" data-pp="ade">Guardar en PDF</button>'+(canEdit?histUI():'')+adelanto():pa?(canEdit?'<button class="go" data-pn>+ Agregar actividad</button>':'')+'<button class="go" data-pp="pro">Guardar en PDF</button>'+programa():fi?financiero():bd?basedatos():rm?reporteM():'')+'</div></div></div>'+(dlg?dialog():'')+(ged?gedit():'')+(padd?progDlg():'')+(newJ?nuevaJ():'')+(pk?picker():'');
+ $('#ap').innerHTML=h+(view==='home'?homeDashboard():rank?ranking():av?avisosUI():desc?descargasUI():jn?juntas():mj?reuniones():pu?puntos():ma?materiales():ae?'<button class="go" data-pp="ade">Guardar en PDF</button>'+(canEdit?histUI():'')+adelanto():pa?(canEdit?'<button class="go" data-pn>+ Agregar actividad</button>':'')+'<button class="go" data-pp="pro">Guardar en PDF</button>'+programa():fi?financiero():bd?basedatos():rm?reporteM():'')+'</div></div></div>'+(dlg?dialog():'')+(ged?gedit():'')+(padd?progDlg():'')+(newJ?nuevaJ():'')+(pk?picker():'');
 }
 async function submit(e){
  e.preventDefault();err('');
@@ -863,7 +930,7 @@ document.addEventListener('click',e=>{
  if(t.dataset.m){mode=t.dataset.m;document.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',b===t));$('#go').textContent=mode==='new'?'Crear cuenta':'Entrar';$('#rt').hidden=mode!=='new';$('#cc').hidden=mode!=='new';$('#code').required=mode==='new'&&document.querySelector('input[name=r]:checked').value==='scouter';if(mode!=='new'){$('#code').value=''}err('')}
  else if(t.dataset.v){if(me&&me.role==='scout'&&(!SCOUT_VIEWS.includes(t.dataset.v)||t.dataset.v==='bd')){view='asis';toast('La Base de datos es exclusiva para Scouters.');return}view=t.dataset.v;renderApp()}
  else if('out' in t.dataset){me=null;canEdit=false;clearDataListeners();if(window.fbAuth)window.fbAuth.signOut().catch(()=>{});show()}
- else if(t.dataset.ge){ged={id:t.dataset.ge,isNew:false};renderApp()}else if(t.dataset.gn){const c=C.find(c=>c.k===t.dataset.gn),n=Math.max(10,...gids(c).map(x=>+x.slice(1)))+1;ged={id:c.k+n,isNew:true};renderApp()}else if('gs' in t.dataset){const n=$('#g-n').value.trim();if(ged.isNew&&!n)return toast('Escribe el nombre del juego.');const id=ged.id;saveG(id,{name:n||J(id).name,desc:$('#g-d').value,mat:$('#g-m').value}).then(ok=>{if(ok){ged=null;toast('Juego guardado.');renderApp()}})}else if('pn' in t.dataset){padd=true;renderApp()}else if('ps' in t.dataset){const d=$('#pd-f').value;if(!d)return toast('Elige la fecha.');if(d.slice(0,4)!=='2026')return toast('El programa es de 2026.');const tp=$('#pd-t').value;let a=$('#pd-a').value.trim(),l=$('#pd-l').value.trim();if(tp==='Junta'){a=a||'Ordinaria';l=l||'Parque del papa'}if(tp==='Vacaciones')a=a||'Vacaciones';const rr={...(((prog['2026']||{}).r)||{})};rr[d]={...(rr[d]||{}),t:tp,a,l,r:$('#pd-r').value.trim()};saveProgAll(rr).then(ok=>{if(ok){padd=false;toast('Actividad guardada.');renderApp()}})}else if(t.dataset.px){const rr={...(((prog['2026']||{}).r)||{})};delete rr[t.dataset.px];saveProgAll(rr)}else if('hx' in t.dataset){hxo=!hxo;renderApp()}else if('hp' in t.dataset){pdfHist()}else if(t.dataset.rx){rxo[t.dataset.rx]=!rxo[t.dataset.rx];renderApp()}else if(t.dataset.eddate){const [month,kind]=t.dataset.eddate.split('|'),raw=reportAdDateRaw(month,kind),dt=raw?new Date(raw+'T12:00:00'):null,current=dt?pad(dt.getDate())+'/'+pad(dt.getMonth()+1)+'/'+dt.getFullYear():'',value=prompt('Escribe la fecha en formato DD/MM/AAAA. Deja vacío para usar la fecha automática.',current);if(value!==null){let iso='';if(value.trim()){if(!/^\d{2}\/\d{2}\/\d{4}$/.test(value.trim()))return toast('Usa el formato DD/MM/AAAA.');const [dd,mm,yyyy]=value.trim().split('/').map(Number),check=new Date(yyyy,mm-1,dd);if(check.getFullYear()!==yyyy||check.getMonth()!==mm-1||check.getDate()!==dd)return toast('La fecha no es válida.');iso=yyyy+'-'+pad(mm)+'-'+pad(dd)}saveReportAdDate(month,kind,iso)}}else if(t.dataset.rq){pdfRep(t.dataset.rq)}else if(t.dataset.fx){fex[t.dataset.fx]=!fex[t.dataset.fx];renderApp()}else if(t.dataset.fp){pdfFin(t.dataset.fp)}else if(t.dataset.dx){dbx[t.dataset.dx]=!dbx[t.dataset.dx];renderApp()}else if(t.dataset.mx){mdx[t.dataset.mx]=!mdx[t.dataset.mx];renderApp()}else if(t.dataset.fm){pdfFicha(t.dataset.fm)}else if('fa' in t.dataset){saveFin([...(((fin.main||{}).items)||[]),{n:'',t:'egreso',a:'',m:t.dataset.fa}])}else if(t.dataset.fd){saveFin((((fin.main||{}).items)||[]).filter((_,j)=>j!==+t.dataset.fd))}else if(t.dataset.pp){pdfTab(t.dataset.pp)}else if('adadminToggle' in t.dataset){adAdminOpen=!adAdminOpen;renderApp()}else if('acnew' in t.dataset){const name=prompt('Nombre de la nueva categoría:');if(name&&name.trim()){const items=[...(((adv.catalogo||{}).items)||[])];items.push({id:'cat_'+Date.now().toString(36),g:name.trim(),c:[]});saveAdCatalog(items)}}else if(t.dataset.aadd!==undefined){const [type,raw]=t.dataset.aadd.split('|'),i=+raw,name=prompt('Nombre del adelanto:');if(name&&name.trim()){const items=[...(((adv.catalogo||{}).items)||[])].map(a=>({...a,c:[...(a.c||[])]}));const item={key:'ad_'+Date.now().toString(36),label:name.trim()};if(type==='base'){const target=AD_BASE[i]?.g;if(target)items.push({id:'item_'+Date.now().toString(36),target,c:[item]})}else if(items[i]&&!items[i].target){items[i].c.push(item)}saveAdCatalog(items)}}else if(t.dataset.aeditcustom){const [i,j]=t.dataset.aeditcustom.split('|').map(Number),items=[...(((adv.catalogo||{}).items)||[])].map(a=>({...a,c:[...(a.c||[])]})),name=prompt('Nuevo nombre del adelanto:',items[i]?.c[j]?.label||'');if(name&&name.trim()&&items[i]?.c[j]){items[i].c[j]={...items[i].c[j],label:name.trim()};saveAdCatalog(items)}}else if(t.dataset.aeditcustomdel){const [i,j]=t.dataset.aeditcustomdel.split('|').map(Number),items=[...(((adv.catalogo||{}).items)||[])].map(a=>({...a,c:[...(a.c||[])]}));if(confirm('¿Quitar este adelanto del catálogo?')){items[i].c.splice(j,1);saveAdCatalog(items)}}else if(t.dataset.aedit){const [i,j]=t.dataset.aedit.split('|').map(Number),items=[...(((adv.catalogo||{}).items)||[])].map(a=>({...a,c:[...(a.c||[])]})),name=prompt('Nuevo nombre del adelanto:',items[i]?.c[j]?.label||'');if(name&&name.trim()&&items[i]?.c[j]){items[i].c[j]={...items[i].c[j],label:name.trim()};saveAdCatalog(items)}}else if(t.dataset.acdel){const [type,val]=t.dataset.acdel.split(':');if(confirm('¿Eliminar esta categoría del catálogo? Los avances guardados no se borrarán, pero dejarán de mostrarse.')){const st=adCatState(),items=[...(st.items||[])],hidden=[...(st.hiddenBase||[])],order=[...(st.order||[])];if(type==='base'){if(!hidden.includes(val))hidden.push(val)}else{items.splice(+val,1)}saveAdCatalog(items,hidden,order)}}else if(t.dataset.acmove){const [i,delta]=t.dataset.acmove.split('|').map(Number),st=adCatState(),order=[...(st.order||[])],names=AD.map(a=>a.g);if(!order.length)order.push(...names);const j=i+delta;if(j>=0&&j<names.length){const tmp=names[i];names[i]=names[j];names[j]=tmp;saveAdCatalog([...(st.items||[])],[...(st.hiddenBase||[])],names)}}else if(t.dataset.aitemdel){const [i,j]=t.dataset.aitemdel.split('|').map(Number),items=[...(((adv.catalogo||{}).items)||[])].map(a=>({...a,c:[...(a.c||[])]}));if(confirm('¿Quitar este adelanto del catálogo? Los avances guardados no se borrarán.')){items[i].c.splice(j,1);saveAdCatalog(items)}}else if(t.dataset.ad){const [id,key]=t.dataset.ad.split('|'),k=id[0],v={...((adv[k]||{}).v||{})},f=id+'.'+key,cur=v[f];const nx=!cur?'wip':cur==='wip'?'por':cur==='por'?'ok':'';if(nx)v[f]=nx;else delete v[f];saveAd(k,v);logAd(id,key,nx)}else if(t.dataset.ma){const k=t.dataset.ma;saveMat(k,[...(((mat[k]||{}).items)||[]),{o:'',c:'',r:''}])}else if(t.dataset.md){const [k,i]=t.dataset.md.split('|');saveMat(k,(((mat[k]||{}).items)||[]).filter((_,j)=>j!==+i))}else if(t.dataset.ar){const d=t.dataset.ar;dr[d]=[...rowsOf(d).map(r=>({...r})),{h:'',g:'',t:'',m:''}];renderApp()}else if(t.dataset.ex){const d=t.dataset.ex;ex[d]=!ex[d];delC=null;renderApp()}else if(t.dataset.jp){pdfJunta(t.dataset.jp)}else if(t.dataset.del){const d=t.dataset.del;if(delC===d){delC=null;delJ(d)}else{delC=d;renderApp()}}else if(t.dataset.sv){const d=t.dataset.sv;saveM(d,rowsOf(d).filter(r=>r.g||r.t||r.h)).then(ok=>{if(ok){delete dr[d];delete ex[d];toast('Junta guardada.');renderApp()}})}else if('nj' in t.dataset){newJ=true;renderApp()}else if('ncr' in t.dataset){const d=$('#nd').value;newJ=false;ex[d]=true;saveM(d,emptyRows());renderApp()}else if(t.dataset.pk){pk=t.dataset.pk;renderApp()}else if('pg' in t.dataset){const [d,i]=pk.split('|'),rows=rowsOf(d).map(r=>({...r}));rows[+i].g=t.dataset.pg;rows[+i].t='';if(t.dataset.pg&&J(t.dataset.pg).mat)rows[+i].m=J(t.dataset.pg).mat;dr[d]=rows;pk=null;renderApp()}else if('rp' in t.dataset){report()}else if(t.dataset.s){const [id,m]=t.dataset.s.split('|');save(id,{start:P(id).start===m?'':m})}else if(t.dataset.d){dlg=t.dataset.d;renderApp()}else if('cl' in t.dataset){dlg=null;newJ=false;pk=null;ged=null;padd=false;renderApp()}else if(t.dataset.p){const [id,k]=t.dataset.p.split('|'),dn=J(id).done||{};saveG(id,{done:{...dn,[k]:!dn[k]}})}else if(t.dataset.a){
+ else if(t.dataset.ge){ged={id:t.dataset.ge,isNew:false};renderApp()}else if(t.dataset.gn){const c=C.find(c=>c.k===t.dataset.gn),n=Math.max(10,...gids(c).map(x=>+x.slice(1)))+1;ged={id:c.k+n,isNew:true};renderApp()}else if('gs' in t.dataset){const n=$('#g-n').value.trim();if(ged.isNew&&!n)return toast('Escribe el nombre del juego.');const id=ged.id;saveG(id,{name:n||J(id).name,desc:$('#g-d').value,mat:$('#g-m').value}).then(ok=>{if(ok){ged=null;toast('Juego guardado.');renderApp()}})}else if('pn' in t.dataset){padd=true;renderApp()}else if('ps' in t.dataset){const d=$('#pd-f').value;if(!d)return toast('Elige la fecha.');if(d.slice(0,4)!=='2026')return toast('El programa es de 2026.');const tp=$('#pd-t').value;let a=$('#pd-a').value.trim(),l=$('#pd-l').value.trim();if(tp==='Junta'){a=a||'Ordinaria';l=l||'Parque del papa'}if(tp==='Vacaciones')a=a||'Vacaciones';const rr={...(((prog['2026']||{}).r)||{})};rr[d]={...(rr[d]||{}),t:tp,a,l,r:$('#pd-r').value.trim()};saveProgAll(rr).then(ok=>{if(ok){padd=false;toast('Actividad guardada.');renderApp()}})}else if(t.dataset.px){const rr={...(((prog['2026']||{}).r)||{})};delete rr[t.dataset.px];saveProgAll(rr)}else if('hx' in t.dataset){hxo=!hxo;renderApp()}else if('hp' in t.dataset){pdfHist()}else if(t.dataset.rx){rxo[t.dataset.rx]=!rxo[t.dataset.rx];renderApp()}else if(t.dataset.eddate){const [month,kind]=t.dataset.eddate.split('|'),raw=reportAdDateRaw(month,kind),dt=raw?new Date(raw+'T12:00:00'):null,current=dt?pad(dt.getDate())+'/'+pad(dt.getMonth()+1)+'/'+dt.getFullYear():'',value=prompt('Escribe la fecha en formato DD/MM/AAAA. Deja vacío para usar la fecha automática.',current);if(value!==null){let iso='';if(value.trim()){if(!/^\d{2}\/\d{2}\/\d{4}$/.test(value.trim()))return toast('Usa el formato DD/MM/AAAA.');const [dd,mm,yyyy]=value.trim().split('/').map(Number),check=new Date(yyyy,mm-1,dd);if(check.getFullYear()!==yyyy||check.getMonth()!==mm-1||check.getDate()!==dd)return toast('La fecha no es válida.');iso=yyyy+'-'+pad(mm)+'-'+pad(dd)}saveReportAdDate(month,kind,iso)}}else if(t.dataset.radd){const [month,kind]=t.dataset.radd.split('|');const who=prompt('Nombre del integrante:');if(!who||!who.trim())return;const what=prompt('Nombre del adelanto:');if(!what||!what.trim())return;const date=prompt('Fecha (DD/MM/AAAA):','');if(date===null)return;const activity=prompt('Actividad:','');const extras={...(((adv.log||{}).extras)||{})},key=month+'|'+kind;extras[key]=[...(extras[key]||[]),{id:'manual_'+Date.now(),name:who.trim(),item:what.trim(),date:date.trim()||'Por definir',activity:activity||''}];db.doc('adelanto/log').set({extras},{merge:true}).then(()=>{toast('Adelanto agregado.');renderApp()}).catch(()=>toast('No se pudo guardar el adelanto.'));}else if(t.dataset.rdel){const [month,kind,raw]=t.dataset.rdel.split('|'),idx=+raw,extras={...(((adv.log||{}).extras)||{})},deleted={...(((adv.log||{}).deleted)||{})},key=month+'|'+kind;const auto=adelEstadoMes(month,kind==='delivered'?'ok':'por',kind);if(idx<auto.length){const ids={...deleted};ids[key]=[...(ids[key]||[]),auto[idx][0]+'|'+auto[idx][1]];deleted[key]=ids[key]}else{const ex=[...(extras[key]||[])];ex.splice(idx-auto.length,1);extras[key]=ex}db.doc('adelanto/log').set({extras,deleted},{merge:true}).then(()=>{toast('Registro eliminado del reporte.');renderApp()}).catch(()=>toast('No se pudo eliminar el registro.'));}else if(t.dataset.rq){pdfRep(t.dataset.rq)}else if(t.dataset.fx){fex[t.dataset.fx]=!fex[t.dataset.fx];renderApp()}else if(t.dataset.fp){pdfFin(t.dataset.fp)}else if(t.dataset.dx){dbx[t.dataset.dx]=!dbx[t.dataset.dx];renderApp()}else if(t.dataset.mx){mdx[t.dataset.mx]=!mdx[t.dataset.mx];renderApp()}else if(t.dataset.fm){pdfFicha(t.dataset.fm)}else if('fa' in t.dataset){saveFin([...(((fin.main||{}).items)||[]),{n:'',t:'egreso',a:'',m:t.dataset.fa}])}else if(t.dataset.fd){saveFin((((fin.main||{}).items)||[]).filter((_,j)=>j!==+t.dataset.fd))}else if(t.dataset.pp){pdfTab(t.dataset.pp)}else if('adadminToggle' in t.dataset){adAdminOpen=!adAdminOpen;renderApp()}else if('acnew' in t.dataset){const name=prompt('Nombre de la nueva categoría:');if(name&&name.trim()){const items=[...(((adv.catalogo||{}).items)||[])];items.push({id:'cat_'+Date.now().toString(36),g:name.trim(),c:[]});saveAdCatalog(items)}}else if(t.dataset.aadd!==undefined){const [type,raw]=t.dataset.aadd.split('|'),i=+raw,name=prompt('Nombre del adelanto:');if(name&&name.trim()){const items=[...(((adv.catalogo||{}).items)||[])].map(a=>({...a,c:[...(a.c||[])]}));const item={key:'ad_'+Date.now().toString(36),label:name.trim()};if(type==='base'){const target=AD_BASE[i]?.g;if(target)items.push({id:'item_'+Date.now().toString(36),target,c:[item]})}else if(items[i]&&!items[i].target){items[i].c.push(item)}saveAdCatalog(items)}}else if(t.dataset.aeditcustom){const [i,j]=t.dataset.aeditcustom.split('|').map(Number),items=[...(((adv.catalogo||{}).items)||[])].map(a=>({...a,c:[...(a.c||[])]})),name=prompt('Nuevo nombre del adelanto:',items[i]?.c[j]?.label||'');if(name&&name.trim()&&items[i]?.c[j]){items[i].c[j]={...items[i].c[j],label:name.trim()};saveAdCatalog(items)}}else if(t.dataset.aeditcustomdel){const [i,j]=t.dataset.aeditcustomdel.split('|').map(Number),items=[...(((adv.catalogo||{}).items)||[])].map(a=>({...a,c:[...(a.c||[])]}));if(confirm('¿Quitar este adelanto del catálogo?')){items[i].c.splice(j,1);saveAdCatalog(items)}}else if(t.dataset.aedit){const [i,j]=t.dataset.aedit.split('|').map(Number),items=[...(((adv.catalogo||{}).items)||[])].map(a=>({...a,c:[...(a.c||[])]})),name=prompt('Nuevo nombre del adelanto:',items[i]?.c[j]?.label||'');if(name&&name.trim()&&items[i]?.c[j]){items[i].c[j]={...items[i].c[j],label:name.trim()};saveAdCatalog(items)}}else if(t.dataset.acdel){const [type,val]=t.dataset.acdel.split(':');if(confirm('¿Eliminar esta categoría del catálogo? Los avances guardados no se borrarán, pero dejarán de mostrarse.')){const st=adCatState(),items=[...(st.items||[])],hidden=[...(st.hiddenBase||[])],order=[...(st.order||[])];if(type==='base'){if(!hidden.includes(val))hidden.push(val)}else{items.splice(+val,1)}saveAdCatalog(items,hidden,order)}}else if(t.dataset.acmove){const [i,delta]=t.dataset.acmove.split('|').map(Number),st=adCatState(),order=[...(st.order||[])],names=AD.map(a=>a.g);if(!order.length)order.push(...names);const j=i+delta;if(j>=0&&j<names.length){const tmp=names[i];names[i]=names[j];names[j]=tmp;saveAdCatalog([...(st.items||[])],[...(st.hiddenBase||[])],names)}}else if(t.dataset.aitemdel){const [i,j]=t.dataset.aitemdel.split('|').map(Number),items=[...(((adv.catalogo||{}).items)||[])].map(a=>({...a,c:[...(a.c||[])]}));if(confirm('¿Quitar este adelanto del catálogo? Los avances guardados no se borrarán.')){items[i].c.splice(j,1);saveAdCatalog(items)}}else if(t.dataset.ad){const [id,key]=t.dataset.ad.split('|'),k=id[0],v={...((adv[k]||{}).v||{})},f=id+'.'+key,cur=v[f];const nx=!cur?'wip':cur==='wip'?'por':cur==='por'?'ok':'';if(nx)v[f]=nx;else delete v[f];saveAd(k,v);logAd(id,key,nx)}else if(t.dataset.ma){const k=t.dataset.ma;saveMat(k,[...(((mat[k]||{}).items)||[]),{o:'',c:'',r:''}])}else if(t.dataset.md){const [k,i]=t.dataset.md.split('|');saveMat(k,(((mat[k]||{}).items)||[]).filter((_,j)=>j!==+i))}else if(t.dataset.ar){const d=t.dataset.ar;dr[d]=[...rowsOf(d).map(r=>({...r})),{h:'',g:'',t:'',m:''}];renderApp()}else if(t.dataset.ex){const d=t.dataset.ex;ex[d]=!ex[d];delC=null;renderApp()}else if(t.dataset.jp){pdfJunta(t.dataset.jp)}else if(t.dataset.del){const d=t.dataset.del;if(delC===d){delC=null;delJ(d)}else{delC=d;renderApp()}}else if(t.dataset.sv){const d=t.dataset.sv;saveM(d,rowsOf(d).filter(r=>r.g||r.t||r.h)).then(ok=>{if(ok){delete dr[d];delete ex[d];toast('Junta guardada.');renderApp()}})}else if('nj' in t.dataset){newJ=true;renderApp()}else if('ncr' in t.dataset){const d=$('#nd').value;newJ=false;ex[d]=true;saveM(d,emptyRows());renderApp()}else if(t.dataset.pk){pk=t.dataset.pk;renderApp()}else if('pg' in t.dataset){const [d,i]=pk.split('|'),rows=rowsOf(d).map(r=>({...r}));rows[+i].g=t.dataset.pg;rows[+i].t='';if(t.dataset.pg&&J(t.dataset.pg).mat)rows[+i].m=J(t.dataset.pg).mat;dr[d]=rows;pk=null;renderApp()}else if('rp' in t.dataset){report()}else if(t.dataset.s){const [id,m]=t.dataset.s.split('|');save(id,{start:P(id).start===m?'':m})}else if(t.dataset.d){dlg=t.dataset.d;renderApp()}else if('cl' in t.dataset){dlg=null;newJ=false;pk=null;ged=null;padd=false;renderApp()}else if(t.dataset.p){const [id,k]=t.dataset.p.split('|'),dn=J(id).done||{};saveG(id,{done:{...dn,[k]:!dn[k]}})}else if(t.dataset.a){
   const [id,k]=t.dataset.a.split('|'),att=P(id).att||{};
   save(id,{att:{...att,[k]:{'':'X',X:'R',R:'F',F:''}[att[k]||'']}});
  }
