@@ -21,9 +21,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#eef1ea;--card:#fff;--ink:#14241d;--mut:#5b6b62;--line:#d3dacf;--acc:#f2b705;--ok:#2f7d4f;--bad:#b3362e;--hd:#14241d;--cell:#f4f7f1;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1612;--card:#17231c;--ink:#eaf0e8;--mut:#9fb0a5;--line:#2a3a31;--hd:#0a110d;--cell:#1c2b22;--ok:#4fae7b;--bad:#ef7c73;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0e1612;--card:#17231c;--ink:#eaf0e8;--mut:#9fb0a5;--line:#2a3a31;--hd:#0a110d;--cell:#1c2b22;--ok:#4fae7b;--bad:#ef7c73;color-scheme:dark}
+:root{--bg:#26343a;--card:#1b292f;--ink:#e8edf0;--mut:#a8b6bc;--line:#394950;--acc:#f2b705;--ok:#4fae7b;--bad:#ef7c73;--hd:#17252b;--cell:#223238;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#26343a;--card:#1b292f;--ink:#e8edf0;--mut:#a8b6bc;--line:#394950;--hd:#17252b;--cell:#223238;--ok:#4fae7b;--bad:#ef7c73;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#26343a;--card:#1b292f;--ink:#e8edf0;--mut:#a8b6bc;--line:#394950;--hd:#17252b;--cell:#223238;--ok:#4fae7b;--bad:#ef7c73;color-scheme:dark}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:inherit}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 "Bricolage Grotesque",system-ui,sans-serif}
@@ -169,9 +169,10 @@ table.ad td.ad-name{font-weight:700;font-size:14px;line-height:1.3;}
 
 
 
+.game-category{margin:0 0 16px}.game-category h2{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
 /* Navegación superior y pantalla Inicio integradas al tema original BELCHET */
-.belchet-nav{display:flex;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;padding:2px 1px 8px;scrollbar-width:thin}
-.belchet-nav button{flex:0 0 auto;display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);padding:9px 12px;font-weight:700;white-space:nowrap}
+.belchet-nav{display:flex;flex-wrap:wrap;gap:6px;overflow-x:visible;padding:2px 1px 8px;scrollbar-width:thin}
+.belchet-nav button{flex:1 1 calc(16.66% - 6px);justify-content:center;display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);padding:9px 12px;font-weight:700;white-space:nowrap}
 .belchet-nav button span{font-size:16px;color:var(--mut);min-width:17px;text-align:center}
 .belchet-nav button.on{background:var(--acc);border-color:var(--acc);color:#14241d}
 .belchet-nav button.on span{color:#14241d}
@@ -184,7 +185,7 @@ table.ad td.ad-name{font-weight:700;font-size:14px;line-height:1.3;}
 .home-list article span,.home-list article small{display:block;color:var(--mut);font-size:13px}
 .home-list article p{margin:4px 0;color:var(--ink);white-space:pre-wrap}
 .app-layout{display:block}.main-content{min-width:0;width:100%}
-@media(max-width:700px){.app{padding:9px}.belchet-nav{margin:0 -2px 3px}.belchet-nav button{padding:8px 10px;font-size:13px}.home-panel{padding:12px}}
+@media(max-width:700px){.app{padding:9px}.belchet-nav{margin:0 -2px 3px;gap:5px}.belchet-nav button{flex:1 1 calc(33.333% - 5px);padding:8px 7px;font-size:12px}.home-panel{padding:12px}}
 
 </style>
 </head>
@@ -365,8 +366,8 @@ async function save(id,patch){
   if(Object.keys(priv).length)await db.doc('privatePeople/'+id).set(priv);
  }catch(e){console.error('Error guardando integrante',e);toast('No se pudo guardar. Revisa los permisos de Firestore.')}
 }
-const C=[{k:'r',n:'Juegos de relevos',s:'Relevo'},{k:'h',n:'Juegos de habilidad',s:'Habilidad'},{k:'u',n:'Juegos rudos / contacto',s:'Rudo'},{k:'a',n:'Juegos de adiestramiento',s:'Adiestramiento'},{k:'t',n:'Temas de adiestramiento',s:'Tema'}];
-let games={},dlg=null,ged=null,avisos={};
+const C=[{k:'r',n:'Juegos de relevos',s:'Relevo'},{k:'h',n:'Juegos de habilidad',s:'Habilidad'},{k:'u',n:'Juegos rudos / contacto',s:'Rudo'},{k:'a',n:'Juegos de adiestramiento',s:'Adiestramiento'},{k:'t',n:'Temas de adiestramiento',s:'Tema'},{k:'p',n:'Pista Comando',s:'Pista Comando'}];
+let games={},dlg=null,ged=null,avisos={},gameCollapsed={};
 let mt={},newJ=false,pk=null,dr={},ex={},delC=null;
 let pts={},mat={},adv={},prog={},fin={},fex={},dbx={},mdx={},hxo=false,rxo={},padd=false,adAdminOpen=false;
 const J=id=>games[id]||(id==='r1'?{name:'Vuelta al parque',desc:'Correr una vuelta al parque.',done:{}}:id==='t1'?{name:'Morse',desc:'Aprenderán la clave morse.',done:{}}:{name:C.find(c=>c.k===id[0]).s+' '+id.slice(1),desc:'',done:{}});
@@ -395,7 +396,8 @@ async function saveM(d,rows){
 const ROLES=['Guía','Subguía','Primer scout','Segundo scout','Tercer scout','Cuarto scout','Quinto scout','Sexto scout'];
 const ROLE=id=>(people[id]&&people[id].rol)||ROLES[+id.slice(1)-1]||'';
 const hasRealName=id=>{const n=String((people[id]||{}).name||'').trim();return !!n&&!/^Integrante\s+\d+$/i.test(n)};
-const mem=g=>{const f=id=>{const r=ROLES.indexOf(ROLE(id));return r<0?99:r};return [...g.m].filter(hasRealName).sort((a,b)=>f(a)-f(b))};
+const allMem=g=>{const ids=new Set([...(g.m||[]),...Object.keys(people).filter(id=>id[0]===g.k)]);const f=id=>{const r=ROLES.indexOf(ROLE(id));return r<0?99:r};return [...ids].sort((a,b)=>f(a)-f(b)||Number(a.slice(1))-Number(b.slice(1)))};
+const mem=g=>allMem(g).filter(hasRealName);
 const AD_BASE=[{g:'Promesa',s:1,c:[['promesa','']]},{g:'Progresiones',c:[['pista','Pista'],['senda','Senda'],['busqueda','Búsqueda'],['desafio','Desafío']]},{g:'Especialidades',c:[['deportes','Deportes'],['humanidades','Humanidades'],['ecologia','Ecología'],['expresion','Expresión y comunicación'],['tecnologia','Tecnología y ciencia'],['otra','Por definir']]},{g:'Vida al aire libre',s:1,c:[['aire','']]},{g:'Cintas y barras',c:[['cintas','Cintas de patrulla'],['bsub','Barra de subguía'],['bguia','Barra de guía']]},{g:'IDO',s:1,c:[['ido','']]}];
 let AD=AD_BASE.map(a=>({...a,c:a.c.map(c=>[...c])}));
 function adCatState(){return adv.catalogo||{items:[],hiddenBase:[],order:[]}}
@@ -453,7 +455,7 @@ function basedatos(){
  const inp=(id,f,v,type)=>'<input class="mt" type="'+(type||'text')+'" data-db="'+id+'|'+f+'" value="'+esc(v||'')+'"'+dis+'>';
  const med=(id,f,v,type)=>'<input class="mt" type="'+(type||'text')+'" data-dm="'+id+'|'+f+'" value="'+esc(v||'')+'"'+dis+'>';
  const sel=(id,f,arr,v)=>'<select data-dm="'+id+'|'+f+'"'+dis+'>'+arr.map(o=>'<option'+(o===(v||'')?' selected':'')+'>'+o+'</option>').join('')+'</select>';
- return G.map(g=>'<div><h2><i style="background:'+g.c+'"></i>'+g.n+'</h2>'+mem(g).map(id=>{
+ return G.map(g=>'<div><h2><i style="background:'+g.c+'"></i>'+g.n+'</h2>'+(canEdit?'<button class="go" data-addmember="'+g.k+'">+ Añadir integrante</button>':'')+allMem(g).map(id=>{
   const p=P(id),m=p.med||{},raw=people[id]||{},open=dbx[id],ed=edad(p.nac);
   const rol='<select data-db="'+id+'|rol"'+dis+'>'+ROLES.map(r=>'<option'+(r===ROLE(id)?' selected':'')+'>'+r+'</option>').join('')+'</select>';
   let h='<div class="dc"><div class="dh"><label class="ph">'+(p.foto?'<img alt="" src="'+esc(p.foto)+'">':esc((raw.name||'?').charAt(0).toUpperCase()))+'<input type="file" accept="image/*" data-ph="'+id+'" hidden'+dis+'></label><div class="dn"><input class="mt" type="text" data-db="'+id+'|name" value="'+esc(raw.name||'')+'" placeholder="Nombre completo (Integrante '+id.slice(1)+')" aria-label="Nombre completo"'+dis+'><div class="d2"><input class="mt" type="text" data-db="'+id+'|cum" value="'+esc(p.cum||'')+'" placeholder="CUM" aria-label="CUM"'+dis+'>'+rol+'</div></div></div>'
@@ -738,7 +740,8 @@ function juntas(){
    const nm='<input class="nm" value="'+esc(g.name)+'" readonly tabindex="-1">';
    rows+='<tr><td>'+nm+'</td><td><button class="ib" data-d="'+id+'" aria-label="Ver descripción">i</button>'+(canEdit?'<button class="ib" data-ge="'+id+'" aria-label="Editar" style="margin-left:4px">✎</button>':'')+'</td>'+ASAT.map(s=>'<td><button class="c '+(dn[s.k]?'X':'')+'" data-p="'+id+'|'+s.k+'"'+(canEdit?'':' disabled')+'>'+(dn[s.k]?'✓':'')+'</button></td>').join('')+'</tr>';
   }
-  return '<div><h2>'+c.n+'</h2><div class="sc games-scroll"><table><thead><tr><th>Juego</th><th>Info</th>'+ASAT.map(s=>'<th>'+s.l+'</th>').join('')+'</tr></thead><tbody>'+rows+'</tbody></table></div>'+(canEdit?'<button class="go" data-gn="'+c.k+'">+ Agregar juego</button>':'')+'</div>';
+  const collapsed=!!gameCollapsed[c.k];
+  return '<div class="game-category"><h2>'+c.n+' <button class="pi" data-gcollapse="'+c.k+'">'+(collapsed?'Expandir ▾':'Contraer ▴')+'</button></h2>'+(collapsed?'':'<div class="sc games-scroll"><table><thead><tr><th>Juego</th><th>Info</th>'+ASAT.map(s=>'<th>'+s.l+'</th>').join('')+'</tr></thead><tbody>'+rows+'</tbody></table></div>')+(canEdit?'<button class="go" data-gn="'+c.k+'">+ Agregar juego</button>':'')+'</div>';
  }).join('');
 }
 function dialog(){const g=J(dlg);return '<div class="ov"><div class="dlg" role="dialog" aria-label="Descripción"><h3>'+esc(g.name)+'</h3><b>Descripción</b>'+(0?'<textarea data-ds="'+dlg+'" placeholder="Escribe de qué trata el juego">'+esc(g.desc||'')+'</textarea>':'<p>'+(esc(g.desc||'')||'Sin descripción todavía.')+'</p>')+'<b>Material</b>'+(0?'<textarea data-ms="'+dlg+'" placeholder="Material que se ocupa para este juego">'+esc(g.mat||'')+'</textarea>':'<p>'+(esc(g.mat||'')||'Sin material todavía.')+'</p>')+'<button class="go" data-cl>Cerrar</button></div></div>'}
@@ -917,6 +920,8 @@ async function submit(e){
 }
 document.addEventListener('click',e=>{
  if(e.target.matches('.ov:not(.keep)')){dlg=null;newJ=false;pk=null;renderApp();return}const t=e.target.closest('button');if(!t)return;
+ if(t.dataset.gcollapse){gameCollapsed[t.dataset.gcollapse]=!gameCollapsed[t.dataset.gcollapse];renderApp();return}
+ if(t.dataset.addmember){if(!canEdit||!db)return toast('Solo un Scouter puede agregar integrantes.');const prefix=t.dataset.addmember;const nums=[...Object.keys(people).filter(id=>id[0]===prefix),...(G.find(g=>g.k===prefix)?.m||[])].map(id=>Number(id.slice(1))).filter(Number.isFinite);const id=prefix+(Math.max(0,...nums)+1);db.doc('people/'+id).set({name:'',att:{},fee:{}}).then(()=>{toast('Integrante agregado. Escribe su nombre en Base de datos.');renderApp()}).catch(e=>{console.error(e);toast('No se pudo agregar. Revisa permisos de Firestore.')});return}
  if(t.id==='menuToggle'){document.querySelector('#sideMenu')?.classList.toggle('menu-open');return}
  if('dcnew' in t.dataset){const name=$('#dc-new')?.value.trim();if(!name)return toast('Escribe el nombre de la categoría.');const id='cat_'+Date.now().toString(36);db.collection('descargasCategorias').doc(id).set({name,createdAt:new Date().toISOString()}).then(()=>{toast('Categoría creada.');renderApp()}).catch(()=>toast('No se pudo crear. Revisa las reglas de Firestore.'));return}
  if('dc' in t.dataset)return;
